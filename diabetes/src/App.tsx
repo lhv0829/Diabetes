@@ -1,34 +1,44 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+
 import './App.css'
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
+import Header from './components/Header'
+import Signup from './components/Signup'
+import Login from './components/Login'
+import Footer from './components/Footer'
 
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <Router>
+      {/* <input type="checkbox" id="side-menu" className="drawer-toggle"></input> */}
+      <section className={`drawer-content`}>
+            <Header></Header>
+            <section className='main'>
+              {/* <Suspense fallback={<Loader/>}> */}
+                {/* <Routes>
+                  <Route path='/' element={<MainPage datas={datas}></MainPage>}></Route>
+                  {datas.map((item:dataType) => <Route path={`/product/${item.id}`} key={item.id} element={<ProductDetail item={item}></ProductDetail>}></Route>)} */}
+                  {/* <Route path={`/product/:id`} element={<ProductDetail></ProductDetail>}></Route> */}
+                  {/* {categoryList.map((category) => <Route path={`/${category.cat}`} key={category.cat} element={<CategoryPage category={category.title} datas={datas}></CategoryPage>}></Route>)} */}
+                  {/* <Route path='/cart' element={<CartPage></CartPage>}></Route> */}
+                  {/* <Route path='/grocery' element={<NotFound></NotFound>}></Route> */}
+                  {/* <Route path='*' element={<NotFound></NotFound>}></Route> */}
+                {/* </Routes> */}
+              {/* </Suspense> */}
+              <Routes>
+                <Route path='/' element={<h1>Diabetes Home Page</h1>}></Route>
+                <Route path='/signup' element={<Signup></Signup>}></Route>
+                {/* <Route path='/login' element={<Login></Login>}></Route> */}
+                <Route path='/login' element={<Login></Login>}></Route>
+              </Routes>
+            </section>
+            <Footer></Footer>
+        </section>
+        {/* <DrawerSide/> */}
+      {/* <h1>Diabetes Home Page</h1> */}
+      
+      {/* <CreateAccountPage></CreateAccountPage> */}
+    </Router>
   )
 }
 

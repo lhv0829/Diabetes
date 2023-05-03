@@ -2,3 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+.drawer-content{
+  overflow: auto;
+}
+
+
