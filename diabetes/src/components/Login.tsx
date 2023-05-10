@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import InputInfo from "./InputInfo";
 import { useState } from "react";
+// import firebase from '../firebase'
 import { getAuth, signInWithEmailAndPassword, setPersistence, browserSessionPersistence, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { FirebaseError } from "firebase/app";
 import { loginState } from "../atom/loginState";

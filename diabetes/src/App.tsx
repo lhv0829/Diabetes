@@ -5,6 +5,7 @@ import Header from './components/Header'
 import Signup from './components/Signup'
 import Login from './components/Login'
 import Footer from './components/Footer'
+import CheckAPI from './components/CheckAPI'
 
 function App() {
 
@@ -30,6 +31,7 @@ function App() {
                 <Route path='/signup' element={<Signup></Signup>}></Route>
                 {/* <Route path='/login' element={<Login></Login>}></Route> */}
                 <Route path='/login' element={<Login></Login>}></Route>
+                <Route path='/check' element={<CheckAPI></CheckAPI>}></Route>
               </Routes>
             </section>
             <Footer></Footer>

@@ -4,6 +4,7 @@ import InputInfo from "./InputInfo";
 
 import SignUpModal from "./SignUpModal";
 import { useEffect, useState } from "react";
+
 import { createUserWithEmailAndPassword, getAuth, fetchSignInMethodsForEmail } from 'firebase/auth'
 import { FirebaseError } from "firebase/app";
 
