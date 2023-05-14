@@ -27,7 +27,7 @@ const BloodSugarInputModal = ( { date } : { date : Date} ) => {
           }}, { merge: true });
       console.log('success');
       handleCloseModal();
-      window.location.reload();
+      // window.location.reload();
     } catch (e) {
       console.error("Error adding document: ", e);
     }

@@ -4,29 +4,32 @@ import { collection, doc, getDoc } from "firebase/firestore";
 import { CiForkAndKnife } from 'react-icons/Ci'
 import { MdOutlineSportsScore } from 'react-icons/md'
 import { BiCheck } from 'react-icons/bi'
+import DatePicker from 'react-datepicker'
+import 'react-datepicker/dist/react-datepicker.css';
 
 const CustomCalendar = ({ kind } : { kind : string}) => {
   const email = localStorage.getItem('Email') as string;
   const [loginEmail, setLoginEmail] = useState(email);
   const [date, setDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(new Date());
+const [showDatePicker, setShowDatePicker] = useState(false);
   const [diet, setDiet] = useState('');
   const [exercise, setExercise] = useState('');
   const [data, setData] = useState({});
 
   const monthNames = [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December'
+    '1월',
+    '2월',
+    '3월',
+    '4월',
+    '5월',
+    '6월',
+    '7월',
+    '8월',
+    '9월',
+    '10월',
+    '11월',
+    '12월'
   ];
 
   const daysInMonth = (month : number, year : number) => {
@@ -45,6 +48,12 @@ const CustomCalendar = ({ kind } : { kind : string}) => {
     setDate(new Date(date.getFullYear(), date.getMonth() + 1, 1));
   };
 
+  const handleDateChange = (date : Date) => {
+    setSelectedDate(date);
+    setDate(new Date(date.getFullYear(), date.getMonth(), 1));
+    setShowDatePicker(false);
+  };
+
   // const handleDietChange = (event) => {
   //   setDiet(event.target.value);
   // };
@@ -52,6 +61,10 @@ const CustomCalendar = ({ kind } : { kind : string}) => {
   // const handleExerciseChange = (event) => {
   //   setExercise(event.target.value);
   // };
+
+  const handleToggleDatePicker = () => {
+    setShowDatePicker(!showDatePicker);
+  };
 
   useEffect(() => {
     const getData = async() => {
@@ -158,7 +171,13 @@ const CustomCalendar = ({ kind } : { kind : string}) => {
           &lt;
         </button>
         <div className="month-year text-lg font-medium">
-          {date.getFullYear()} {monthNames[date.getMonth()]} 
+          <h2>
+            {date.getFullYear()} {monthNames[date.getMonth()]} 
+          </h2>
+          <button onClick={handleToggleDatePicker}>Change month</button>
+          {showDatePicker && (
+            <DatePicker selected={selectedDate} onChange={handleDateChange} dateFormat="MMMM yyyy" showMonthYearPicker />
+          )}
         </div>
         <button className="next-month text-lg" onClick={handleNextMonth}>
           &gt;
