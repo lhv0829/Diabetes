@@ -19,6 +19,8 @@ const Header = () => {
         navigate('/');
         setIsLogin(false);
         localStorage.setItem('isLogin', 'false');
+        localStorage.removeItem('Email');
+        
         console.log(`로그아웃 & isLogin:${isLogin}`);
     } catch(error){
         alert(`Unexpected Error : ${error}`)
@@ -73,10 +75,10 @@ const Header = () => {
         </div>
         <div id="navbar-collapse-with-animation" className="hs-collapse hidden overflow-hidden transition-all duration-300 basis-full grow sm:block">
           <div className="flex flex-col gap-y-4 gap-x-0 mt-5 sm:flex-row sm:items-center sm:justify-end sm:gap-y-0 sm:gap-x-7 sm:mt-0 sm:pl-7">
-            <a className="font-medium text-white sm:py-6" href="#" aria-current="page">메인</a>
-            <a className="font-medium text-white/[.8] hover:text-white sm:py-6" href="#">혈당</a>
-            <a className="font-medium text-white/[.8] hover:text-white sm:py-6" href="#">식단</a>
-            <a className="font-medium text-white/[.8] hover:text-white sm:py-6" href="#">운동</a>
+            <Link className="font-medium text-white/[.8] hover:text-white sm:py-6" to="/">홈</Link>
+            <Link className="font-medium text-white/[.8] hover:text-white sm:py-6" to={`${isLogin ? '/bloodsugar' : '/login'}`}>혈당</Link>
+            <Link className="font-medium text-white/[.8] hover:text-white sm:py-6" to={`${isLogin ? '/diet' : '/login'}`}>식단</Link>
+            <Link className="font-medium text-white/[.8] hover:text-white sm:py-6" to={`${isLogin ? '/exercise' : '/login'}`}>운동</Link>
 
             {
               isLogin ?

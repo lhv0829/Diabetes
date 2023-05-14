@@ -9,7 +9,7 @@ import 'firebase/compat/firestore';
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
+export const firebaseConfig = {
   apiKey: "AIzaSyAwDKm9EpfUIAn8k9UlG9xXfOqVhj3nnCc",
   authDomain: "diabetes-952c8.firebaseapp.com",
   projectId: "diabetes-952c8",
@@ -22,11 +22,9 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 // firebase의 firestore 인스턴스를 변수에 저장
-// const firestore = firebase.firestore();
+const firestore = firebase.firestore();
 
 // 필요한 곳에서 사용할 수 있도록 내보내기
 // 다른 곳에서 불러올때 firestore로 불러와야 함!!
 
-// export { firestore };
-
-export default firebase;
+export { firestore };
