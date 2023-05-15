@@ -7,7 +7,7 @@ const BloodSugarInputModal = ( { date } : { date : Date} ) => {
   const [loginEmail, setLoginEmail] = useState(email);
   const [bloodsugar, setBloodsugar] = useState(0);
   const dateKey = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
-  
+  const [value, setValue] = useState('');
 
   const handleCloseModal = () => {
     const button = document.querySelector('button[data-hs-overlay="#hs-slide-down-animation-modal"]') as HTMLButtonElement;
@@ -25,9 +25,8 @@ const BloodSugarInputModal = ( { date } : { date : Date} ) => {
               "bloodSugar": bloodsugar
             },
           }}, { merge: true });
-      console.log('success');
       handleCloseModal();
-      // window.location.reload();
+      setValue('');
     } catch (e) {
       console.error("Error adding document: ", e);
     }
@@ -50,7 +49,15 @@ const BloodSugarInputModal = ( { date } : { date : Date} ) => {
             </div>
             <form onSubmit={AddBloodsugar}>
               <div className="p-4 overflow-y-auto">
-              <input type="text" onChange={e => setBloodsugar(Number(e.target.value))} placeholder="Type here" className="input input-bordered input-accent w-full max-w-xs" />
+              <input 
+                type="text" 
+                onChange={e =>{ 
+                  setBloodsugar(Number(e.target.value));
+                  setValue(e.target.value);
+                }} 
+                value={value} 
+                placeholder="Type here" 
+                className="input input-bordered input-accent w-full max-w-xs" />
               </div>
               <div className="flex justify-end items-center gap-x-2 py-3 px-4 border-t dark:border-gray-700">
                 <button type="button" className="hs-dropdown-toggle py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md border font-medium bg-white text-gray-700 shadow-sm align-middle hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white focus:ring-blue-600 transition-all text-sm dark:bg-slate-900 dark:hover:bg-slate-800 dark:border-gray-700 dark:text-gray-400 dark:hover:text-white dark:focus:ring-offset-gray-800" data-hs-overlay="#hs-slide-down-animation-modal">

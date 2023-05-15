@@ -1,21 +1,25 @@
 import React, { useState,useEffect } from 'react';
 import { firestore } from "../firebase";
-import { collection, doc, getDoc } from "firebase/firestore";
+import { collection, doc, onSnapshot } from "firebase/firestore";
 import { CiForkAndKnife } from 'react-icons/Ci'
 import { MdOutlineSportsScore } from 'react-icons/md'
-import { BiCheck } from 'react-icons/bi'
+import { BiCheck, BiCaretLeft, BiCaretRight } from 'react-icons/bi'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css';
+import { Calendar } from 'primereact/calendar';
+import "primereact/resources/primereact.min.css";
+import "primereact/resources/themes/lara-light-indigo/theme.css"; 
+
 
 const CustomCalendar = ({ kind } : { kind : string}) => {
   const email = localStorage.getItem('Email') as string;
-  const [loginEmail, setLoginEmail] = useState(email);
-  const [date, setDate] = useState(new Date());
-  const [selectedDate, setSelectedDate] = useState(new Date());
-const [showDatePicker, setShowDatePicker] = useState(false);
-  const [diet, setDiet] = useState('');
-  const [exercise, setExercise] = useState('');
+  const [loginEmail, setLoginEmail] = useState<string>(email);
+  const [date, setDate] = useState<Date>(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [selectedDateKey, setSelectedDateKey] = useState<string>('')
+  const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
   const [data, setData] = useState({});
+  const [isModal, setIsModal] = useState<boolean>(false);
 
   const monthNames = [
     '1월',
@@ -54,14 +58,6 @@ const [showDatePicker, setShowDatePicker] = useState(false);
     setShowDatePicker(false);
   };
 
-  // const handleDietChange = (event) => {
-  //   setDiet(event.target.value);
-  // };
-
-  // const handleExerciseChange = (event) => {
-  //   setExercise(event.target.value);
-  // };
-
   const handleToggleDatePicker = () => {
     setShowDatePicker(!showDatePicker);
   };
@@ -70,10 +66,10 @@ const [showDatePicker, setShowDatePicker] = useState(false);
     const getData = async() => {
       const documentRef = doc(collection(firestore, 'users'), loginEmail);
       try{
-        const querySnapshot = await getDoc(documentRef);
-        // console.log(querySnapshot.data());
-        if(querySnapshot.data() !== undefined) setData(querySnapshot.data().dates);
-        // setTimeout(() => console.log(data), 1000);
+        const query = await onSnapshot(documentRef, (doc) => {
+          setData(doc.data()?.dates);
+          console.log(doc.data()?.dates);
+        });
       } catch(e) {
         console.log(e);
       }
@@ -81,18 +77,12 @@ const [showDatePicker, setShowDatePicker] = useState(false);
     getData();
   },[]);
 
-  useEffect(() => {
-    console.log(data);
-  },[data]);
-
   const dietCalendar = (year:number, month:number, day:number):boolean => {
     const dateKey = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
     let dayData = null;
     if (data && data[dateKey]) {
       dayData = data[dateKey];
     }
-    // console.log(dayData);
-    // console.log(dayData.food);
     if(dayData !== null && dayData.food !== undefined) return true;
     else return false;
   };
@@ -118,8 +108,9 @@ const [showDatePicker, setShowDatePicker] = useState(false);
     if(dayData !== null && dayData.bloodSugar !== undefined) return true;
     else return false;
   };
-
-
+  const handleDayClick = (year:number, month:number, day:number) => {
+    setSelectedDateKey(`${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`)
+  };
 
   const renderCalendarDays = () => {
     const days = [];
@@ -142,7 +133,7 @@ const [showDatePicker, setShowDatePicker] = useState(false);
       const bloodsugar = kind === 'bloodsugar' && bloodSugarCalendar(year, month, day);
 
       days.push(
-        <div className={`day w-full h-16 border`} key={`${year}-${month}-${day}`}>
+        <div className={`day w-full h-16 border`} onClick={() => handleDayClick(year, month, day)} key={`${year}-${month}-${day}`}>
           <div className={`day-number rounded-full w-6 h-6 ${isToday ? 'bg-blue-300' : ''}`}>{day}</div>
           <div className="day-details">
             {food && <CiForkAndKnife></CiForkAndKnife>}
@@ -160,27 +151,22 @@ const [showDatePicker, setShowDatePicker] = useState(false);
 
   return (
     <div className="calendar bg-white rounded-lg shadow-lg">
-      <div className="header flex justify-between p-4 border-b">
-        {/* <div className="date-picker">
-          <label htmlFor="selected-date" className="font-medium mr-2">
-            Selected date:
-          </label>
-          <input type="date" id="selected-date" className="border rounded-lg p-2" value={new Date(selectedDate.getTime() - (selectedDate.getTimezoneOffset() * 60000)).toISOString().substring(0, 10)} onChange={(event) => setSelectedDate(new Date(event.target.value))} />        
-        </div> */}
-        <button className="previous-month text-lg" onClick={handlePreviousMonth}>
-          &lt;
+      <div className=' px-5'>
+        <div className='flex w-96 bg-white'>
+          <Calendar value={selectedDate} onChange={(e) => handleDateChange(e.target.value as Date)} view="month" dateFormat="mm/yy" />
+        </div>
+      </div>
+      <div className="header flex justify-center gap-8 p-4 border-b">
+        <button className="previous-month text-2xl text-blue-800" onClick={handlePreviousMonth}>
+          <BiCaretLeft></BiCaretLeft>
         </button>
         <div className="month-year text-lg font-medium">
           <h2>
             {date.getFullYear()} {monthNames[date.getMonth()]} 
           </h2>
-          <button onClick={handleToggleDatePicker}>Change month</button>
-          {showDatePicker && (
-            <DatePicker selected={selectedDate} onChange={handleDateChange} dateFormat="MMMM yyyy" showMonthYearPicker />
-          )}
         </div>
-        <button className="next-month text-lg" onClick={handleNextMonth}>
-          &gt;
+        <button className="next-month text-2xl text-blue-800" onClick={handleNextMonth}>
+          <BiCaretRight></BiCaretRight>
         </button>
       </div>
       <div className="days-of-week grid grid-cols-7 text-center text-sm font-medium p-4 border-b">

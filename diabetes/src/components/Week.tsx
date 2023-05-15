@@ -1,226 +1,76 @@
-const Week = () => {
-  return(
-<div className="h-screen bg-gray-100 p-6">
-      <div  className='flex bg-white shadow-md justify-start md:justify-center rounded-lg overflow-x-scroll mx-auto py-4 px-2  md:mx-12 mb-10'>
-        
-          <div className='flex group hover:bg-purple-500 hover:shadow-lg hover-dark-shadow rounded-full mx-1 transition-all	duration-300	 cursor-pointer justify-center w-16'>
-              <div className='flex items-center px-4 py-4'>
-                  <div className='text-center'>
-                     <p className='text-gray-900 group-hover:text-gray-100 text-sm transition-all  group-hover:font-semibold duration-300'> Sun </p>
-                     <p className='text-gray-900 group-hover:text-gray-100 mt-3 group-hover:font-bold transition-all	duration-300'> 11 </p>
-                  </div>
+import React, { useState, useEffect } from 'react';
+import { BsCalendarCheck } from 'react-icons/bs'
+
+const Week = ({date}:{date:Date}) => {
+  const [selectedDate, setSelectedDate] = useState(date);
+
+  useEffect(() => {
+    setSelectedDate(date)
+  },[date]);
+
+
+  const renderWeekDays = () => {
+    const days = [];
+    const dayOfWeek = selectedDate.getDay();
+    const startDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate() - dayOfWeek);
+    const endDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate() - dayOfWeek + 6);
+
+    for (let date = new Date(startDate); date <= endDate; date.setDate(date.getDate() + 1)) {
+      const day = date.getDate();
+      const month = date.getMonth();
+      const year = date.getFullYear();
+      const isToday = day === new Date().getDate() && month === new Date().getMonth() && year === new Date().getFullYear();
+      const selected = day === selectedDate.getDate() && month === selectedDate.getMonth() && year === selectedDate.getFullYear();
+
+      days.push(
+        <div className={`day`} key={`${year}-${month}-${day}`}>
+          <div className="day-of-week border">{getDayOfWeek(date.getDay())}</div>
+          <div className='border'>
+            <div className='flex gap-1'>
+              <div className={`day-number w-6 ${selected ? 'rounded-full bg-blue-200' : ''}`}>
+                {day === 1 ? `${month + 1}/${day}` : day}
               </div>
+              {isToday && <div className='flex justify-center items-center'><BsCalendarCheck></BsCalendarCheck></div>}
+            </div>
+            <div className='h-16'></div>
           </div>
-        
-        <div className='flex group hover:bg-purple-500 hover:shadow-lg hover-dark-shadow rounded-full mx-1 transition-all	duration-300	 cursor-pointer justify-center  w-16'>
-              <div className='flex items-center px-4 py-4'>
-                  <div className='text-center'>
-                     <p className='text-gray-900 group-hover:text-gray-100 text-sm transition-all  group-hover:font-semibold duration-300'> Mon </p>
-                     <p className='text-gray-900 group-hover:text-gray-100 mt-3 group-hover:font-bold transition-all	duration-300'> 12 </p>
-                  </div>
-              </div>
-          </div>
-        
-        <div className='flex group hover:bg-purple-500 hover:shadow-lg hover-dark-shadow rounded-full mx-1 transition-all	duration-300	 cursor-pointer justify-center  w-16'>
-              <div className='flex items-center px-4 py-4'>
-                  <div className='text-center'>
-                     <p className='text-gray-900 group-hover:text-gray-100 text-sm transition-all font-normal group-hover:font-semibold	duration-300'> Tue </p>
-                     <p className='text-gray-900 group-hover:text-gray-100 mt-3 group-hover:font-bold transition-all	duration-300'> 13</p>
-                  </div>
-              </div>
-          </div>
-        
-          <div className='flex group bg-purple-600 shadow-lg dark-shadow rounded-full mx-1 cursor-pointer justify-center relative  w-16'>
-            <span className="flex h-2 w-2 absolute bottom-1.5 ">
-              <span className="animate-ping absolute group-hover:opacity-75 opacity-0 inline-flex h-full w-full rounded-full bg-purple-400 "></span>
-              <span className="relative inline-flex rounded-full h- w-3 bg-purple-100"></span>
-            </span>
-              <div className='flex items-center px-4 my-2 py-4'>
-                  <div className='text-center'>
-                     <p className='text-gray-100 text-sm font-semibold'> Wed </p>
-                     <p className='text-gray-100  mt-3 font-bold'> 14 </p>
-                  </div>
-              </div>
-          </div>
-        
-        <div className='flex group hover:bg-purple-500 hover:shadow-lg hover-dark-shadow rounded-full mx-1 transition-all	duration-300 cursor-pointer justify-center w-16'>
-              <div className='flex items-center px-4 py-4'>
-                  <div className='text-center'>
-                     <p className='text-gray-900 group-hover:text-gray-100 text-sm transition-all  group-hover:font-semibold duration-300'> Thu </p>
-                     <p className='text-gray-900 group-hover:text-gray-100 mt-3 group-hover:font-bold transition-all	duration-300'> 15 </p>
-                  </div>
-              </div>
-          </div>
-        
-        <div className='flex group hover:bg-purple-500 hover:shadow-lg hover-dark-shadow rounded-full mx-1 transition-all	duration-300	 cursor-pointer justify-center  w-16'>
-              <div className='flex items-center px-4 py-4'>
-                  <div className='text-center'>
-                     <p className='text-gray-900 group-hover:text-gray-100 text-sm transition-all  group-hover:font-semibold duration-300'> Fri </p>
-                     <p className='text-gray-900 group-hover:text-gray-100 mt-3 group-hover:font-bold transition-all	duration-300'> 16 </p>
-                  </div>
-              </div>
-          </div>
-          
-        <div className='flex group hover:bg-purple-500 hover:shadow-lg hover-dark-shadow rounded-full mx-1 transition-all	duration-300	 cursor-pointer justify-center w-16'>
-              <div className='flex items-center px-4 py-4'>
-                  <div className='text-center'>
-                     <p className='text-gray-900 group-hover:text-gray-100 text-sm transition-all  group-hover:font-semibold duration-300'> Sat </p>
-                     <p className='text-gray-900 group-hover:text-gray-100 mt-3 group-hover:font-bold transition-all	duration-300'> 17 </p>
-                  </div>
-              </div>
-          </div>
-          
-        
+        </div>
+      );
+    }
+
+    return days;
+  };
+
+  const getDayOfWeek = (dayOfWeek:number) => {
+    switch (dayOfWeek) {
+      case 0:
+        return 'Sun';
+      case 1:
+        return 'Mon';
+      case 2:
+        return 'Tue';
+      case 3:
+        return 'Wed';
+      case 4:
+        return 'Thu';
+      case 5:
+        return 'Fri';
+      case 6:
+        return 'Sat';
+      default:
+        return '';
+    }
+  };
+
+
+
+  return (
+    <div className="week-calendar bg-white rounded-lg shadow-lg">
+      <div className="week-days grid grid-cols-7">
+        {renderWeekDays()}
       </div>
-      <div  className='flex bg-white shadow-md justify-start md:justify-center rounded-lg overflow-x-scroll mx-auto py-4 px-2  md:mx-12'>
-        
-          <div className='flex group hover:bg-purple-500 hover:shadow-lg hover-dark-shadow rounded-lg mx-1 transition-all	duration-300	 cursor-pointer justify-center w-16'>
-              <div className='flex items-center px-4 py-4'>
-                  <div className='text-center'>
-                     <p className='text-gray-900 group-hover:text-gray-100 text-sm transition-all	duration-300'> Sun </p>
-                     <p className='text-gray-900 group-hover:text-gray-100 mt-3 group-hover:font-bold transition-all	duration-300'> 11 </p>
-                  </div>
-              </div>
-          </div>
-        
-        <div className='flex group hover:bg-purple-500 hover:shadow-lg hover-dark-shadow rounded-lg mx-1 transition-all	duration-300	 cursor-pointer justify-center  w-16'>
-              <div className='flex items-center px-4 py-4'>
-                  <div className='text-center'>
-                     <p className='text-gray-900 group-hover:text-gray-100 text-sm transition-all	duration-300'> Mon </p>
-                     <p className='text-gray-900 group-hover:text-gray-100 mt-3 group-hover:font-bold transition-all	duration-300'> 12 </p>
-                  </div>
-              </div>
-          </div>
-        
-        <div className='flex group hover:bg-purple-500 hover:shadow-lg hover-dark-shadow rounded-lg mx-1 transition-all	duration-300	 cursor-pointer justify-center  w-16'>
-              <div className='flex items-center px-4 py-4'>
-                  <div className='text-center'>
-                     <p className='text-gray-900 group-hover:text-gray-100 text-sm transition-all	duration-300'> Tue </p>
-                     <p className='text-gray-900 group-hover:text-gray-100 mt-3 group-hover:font-bold transition-all	duration-300'> 13</p>
-                  </div>
-              </div>
-          </div>
-        
-          <div className='flex group bg-purple-600 shadow-lg dark-shadow rounded-lg mx-1 cursor-pointer justify-center relative  w-16'>
-            <span className="flex h-3 w-3 absolute -top-1 -right-1">
-              <span className="animate-ping absolute group-hover:opacity-75 opacity-0 inline-flex h-full w-full rounded-full bg-purple-400 "></span>
-              <span className="relative inline-flex rounded-full h-3 w-3 bg-purple-100"></span>
-            </span>
-              <div className='flex items-center px-4 py-4'>
-                  <div className='text-center'>
-                     <p className='text-gray-100 text-sm'> Wed </p>
-                     <p className='text-gray-100  mt-3 font-bold'> 14 </p>
-                  </div>
-              </div>
-          </div>
-        
-        <div className='flex group hover:bg-purple-500 hover:shadow-lg hover-dark-shadow rounded-lg mx-1 transition-all	duration-300 cursor-pointer justify-center w-16'>
-              <div className='flex items-center px-4 py-4'>
-                  <div className='text-center'>
-                     <p className='text-gray-900 group-hover:text-gray-100 text-sm transition-all	duration-300'> Thu </p>
-                     <p className='text-gray-900 group-hover:text-gray-100 mt-3 group-hover:font-bold transition-all	duration-300'> 15 </p>
-                  </div>
-              </div>
-          </div>
-        
-        <div className='flex group hover:bg-purple-500 hover:shadow-lg hover-dark-shadow rounded-lg mx-1 transition-all	duration-300	 cursor-pointer justify-center  w-16'>
-              <div className='flex items-center px-4 py-4'>
-                  <div className='text-center'>
-                     <p className='text-gray-900 group-hover:text-gray-100 text-sm transition-all	duration-300'> Fri </p>
-                     <p className='text-gray-900 group-hover:text-gray-100 mt-3 group-hover:font-bold transition-all	duration-300'> 16 </p>
-                  </div>
-              </div>
-          </div>
-          
-        <div className='flex group hover:bg-purple-500 hover:shadow-lg hover-dark-shadow rounded-lg mx-1 transition-all	duration-300	 cursor-pointer justify-center w-16'>
-              <div className='flex items-center px-4 py-4'>
-                  <div className='text-center'>
-                     <p className='text-gray-900 group-hover:text-gray-100 text-sm transition-all	duration-300'> Sat </p>
-                     <p className='text-gray-900 group-hover:text-gray-100 mt-3 group-hover:font-bold transition-all	duration-300'> 17 </p>
-                  </div>
-              </div>
-          </div>
-          
-        
-      </div>
-      
-      <br/><br/>
-      
-       <div  className='flex bg-white shadow-md justify-start md:justify-center rounded-lg overflow-x-scroll mx-auto py-4 px-2  md:mx-12'>
-        
-          <div className='flex group hover:bg-purple-100 hover:shadow-lg hover-light-shadow rounded-lg mx-1 transition-all	duration-300	 cursor-pointer justify-center w-16'>
-              <div className='flex items-center px-4 py-4'>
-                  <div className='text-center'>
-                     <p className='text-gray-900 group-hover:text-purple-900 text-sm transition-all	duration-300'> Sun </p>
-                     <p className='text-gray-900 group-hover:text-purple-900 mt-3 group-hover:font-bold transition-all	duration-300'> 11 </p>
-                  </div>
-              </div>
-          </div>
-        
-        <div className='flex group hover:bg-purple-100 hover:shadow-lg hover-light-shadow rounded-lg mx-1 transition-all	duration-300	 cursor-pointer justify-center w-16'>
-              <div className='flex items-center px-4 py-4'>
-                  <div className='text-center'>
-                     <p className='text-gray-900 group-hover:text-purple-900 text-sm transition-all	duration-300'> Mon </p>
-                     <p className='text-gray-900 group-hover:text-purple-900 mt-3 group-hover:font-bold transition-all	duration-300'> 12 </p>
-                  </div>
-              </div>
-          </div>
-        
-        <div className='flex group hover:bg-purple-100 hover:shadow-lg hover-light-shadow rounded-lg mx-1 transition-all	duration-300	 cursor-pointer justify-center w-16'>
-              <div className='flex items-center px-4 py-4'>
-                  <div className='text-center'>
-                     <p className='text-gray-900 group-hover:text-purple-900 text-sm transition-all	duration-300'> Tue </p>
-                     <p className='text-gray-900 group-hover:text-purple-900 mt-3 group-hover:font-bold transition-all	duration-300'> 13</p>
-                  </div>
-              </div>
-          </div>
-        
-          <div className='flex group bg-purple-300 shadow-lg light-shadow rounded-lg mx-1 cursor-pointer justify-center relative w-16 content-center'>
-            <span className="flex h-3 w-3 absolute -top-1 -right-1">
-              <span className="animate-ping absolute group-hover:opacity-75 opacity-0 inline-flex h-full w-full rounded-full bg-purple-400 "></span>
-              <span className="relative inline-flex rounded-full h-3 w-3 bg-purple-500"></span>
-            </span>
-              <div className='flex items-center px-4 py-4'>
-                  <div className='text-center'>
-                     <p className='text-purple-900 text-sm'> Wed </p>
-                     <p className='text-purple-900  mt-3 font-bold'> 14 </p>
-                  </div>
-              </div>
-          </div>
-        
-        <div className='flex group hover:bg-purple-100 hover:shadow-lg hover-light-shadow rounded-lg mx-1 transition-all	duration-300 content-center	 cursor-pointer justify-center w-16'>
-              <div className='flex items-center px-4 py-4'>
-                  <div className='text-center'>
-                     <p className='text-gray-900 group-hover:text-purple-900 text-sm transition-all	duration-300'> Thu </p>
-                     <p className='text-gray-900 group-hover:text-purple-900 mt-3 group-hover:font-bold transition-all	duration-300'> 15 </p>
-                  </div>
-              </div>
-          </div>
-        
-        <div className='flex group hover:bg-purple-100 hover:shadow-lg hover-light-shadow rounded-lg mx-1 transition-all	duration-300	 cursor-pointer justify-center w-16'>
-              <div className='flex items-center px-4 py-4'>
-                  <div className='text-center'>
-                     <p className='text-gray-900 group-hover:text-purple-900 text-sm transition-all	duration-300'> Fri </p>
-                     <p className='text-gray-900 group-hover:text-purple-900 mt-3 group-hover:font-bold transition-all	duration-300'> 16 </p>
-                  </div>
-              </div>
-          </div>
-          
-        <div className='flex group hover:bg-purple-100 hover:shadow-lg hover-light-shadow rounded-lg mx-1 transition-all	duration-300	 cursor-pointer justify-center w-16'>
-              <div className='flex items-center px-4 py-4'>
-                  <div className='text-center'>
-                     <p className='text-gray-900 group-hover:text-purple-900 text-sm transition-all	duration-300'> Sat </p>
-                     <p className='text-gray-900 group-hover:text-purple-900 mt-3 group-hover:font-bold transition-all	duration-300'> 17 </p>
-                  </div>
-              </div>
-          </div>
-          
-        
-      </div>
-      
-      
     </div>
-  )
-}
+  );
+};
 
 export default Week;

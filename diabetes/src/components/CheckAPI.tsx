@@ -4,7 +4,9 @@ import { API_KEY, APP_ID } from "./constants/constants";
 
 const CheckAPI = () => {
   const [searchResults, setSearchResults] = useState([]);
-  axios.get(`https://api.nutritionix.com/v1_1/search/q=banana?results=0:20&fields=item_name,brand_name,item_id,nf_calories,nf_total_fat&appId=${APP_ID}&appKey=${API_KEY}`)
+  const [food, setFood] = useState<string>('');
+
+  axios.get(`https://api.nutritionix.com/v1_1/search/q=banana?results=0:5&fields=item_name,brand_name,item_id,nf_calories,nf_total_fat&appId=${APP_ID}&appKey=${API_KEY}`)
      .then(response => {
          setSearchResults(response.data.hits);
         //  console.log(response.data.hits);

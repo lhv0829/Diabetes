@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { BsCalendarCheck } from 'react-icons/bs'
 
 const WeekCalendar = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -20,8 +21,11 @@ const WeekCalendar = () => {
         <div className={`day`} key={`${year}-${month}-${day}`}>
           <div className="day-of-week border">{getDayOfWeek(date.getDay())}</div>
           <div className='border'>
-            <div className={`day-number w-6 ${isToday ? 'bg-blue-300' : ''} ${selected ? 'rounded-full bg-green-200' : ''}`}>
-              {day === 1 ? `${month + 1}/${day}` : day}
+            <div className='flex gap-1'>
+              <div className={`day-number w-6 ${selected ? 'rounded-full bg-blue-200' : ''}`}>
+                {day === 1 ? `${month + 1}/${day}` : day}
+              </div>
+              {isToday && <div className='flex justify-center items-center'><BsCalendarCheck></BsCalendarCheck></div>}
             </div>
             <div className='h-16'></div>
           </div>

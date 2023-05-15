@@ -3,7 +3,17 @@
 @tailwind utilities;
 
 .drawer-content{
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
   overflow: auto;
 }
 
+.main{
+  flex-grow: 1;
+  min-height: calc(100vh - [header height] - [footer height]);
+}
 
+.footer{
+  flex-shrink: 0;
+}
