@@ -68,7 +68,7 @@ const CheckAPI = () => {
   return( 
 		<>
 			<h2 className="text-3xl">API Test</h2>
-			<div className="border w-96 h-72">
+			<div className="border w-96 h-36">
 				<form onSubmit={handleFoodFormSubmit}>
 					<input 
 						type="text"
@@ -79,7 +79,7 @@ const CheckAPI = () => {
 					<button className="btn" type="submit">제출</button>
 				</form>
 			</div>
-			<div className="border w-96 h-72">
+			<div className="border w-96 h-36">
 				<form onSubmit={handleExerciseFormSubmit}>
 					<input 
 						type="text"

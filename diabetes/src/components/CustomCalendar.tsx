@@ -4,13 +4,12 @@ import { collection, doc, onSnapshot } from "firebase/firestore";
 import { CiForkAndKnife } from 'react-icons/Ci'
 import { BsFileEarmarkMedical } from 'react-icons/bs'
 import { MdOutlineSportsScore } from 'react-icons/md'
-import { BiCheck, BiCaretLeft, BiCaretRight } from 'react-icons/bi'
+import { BiCaretLeft, BiCaretRight } from 'react-icons/bi'
 import { Calendar } from 'primereact/calendar';
 import "primereact/resources/primereact.min.css";
 import "primereact/resources/themes/lara-light-indigo/theme.css"; 
 import { sort } from './constants/constants';
-import Modal from './Modal'
-import TestModal from './TestModal';
+import MonthModal from './MonthModal';
 
 
 const CustomCalendar = ({ sort, onDateChange } : { sort : sort, onDateChange:(date:Date) => void}) => {
@@ -185,7 +184,7 @@ const CustomCalendar = ({ sort, onDateChange } : { sort : sort, onDateChange:(da
         </button>
       </div> */}
       {/* <Modal sort={sort} dateKey={modalDate}></Modal>   */}
-      <TestModal dateKey={modalDate} sort={sort}></TestModal>
+      <MonthModal dateKey={modalDate} sort={sort}></MonthModal>
     </div>
   );
 };

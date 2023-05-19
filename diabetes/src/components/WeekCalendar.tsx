@@ -6,7 +6,7 @@ import { sort } from './constants/constants';
 import { BsFileEarmarkMedical } from 'react-icons/bs'
 import { CiForkAndKnife } from 'react-icons/Ci'
 import { MdOutlineSportsScore } from 'react-icons/md'
-import Modal from './Modal';
+import WeekModal from './WeekModal';
 
 const WeekCalendar = ({date, sort}:{date:Date, sort:sort}) => {
   const email = localStorage.getItem('Email') as string;
@@ -139,7 +139,7 @@ const WeekCalendar = ({date, sort}:{date:Date, sort:sort}) => {
     <div className="week-calendar bg-white rounded-lg shadow-lg">
       <div className="week-days grid grid-cols-7">
         {renderWeekDays()}
-        <Modal sort={sort} dateKey={modalDate}></Modal>
+        <WeekModal sort={sort} dateKey={modalDate}></WeekModal>
       </div>
     </div>
   );

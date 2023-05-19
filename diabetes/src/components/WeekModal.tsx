@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { firestore } from "../firebase";
 import { sort } from "./constants/constants";
 
-const Modal = ( { sort, dateKey } : { sort:sort, dateKey : string} ) => {
+const WeekModal = ( { sort, dateKey } : { sort:sort, dateKey : string} ) => {
   const email = localStorage.getItem('Email') as string;
   const [formData, setFormData] = useState<{ [key: string]: string | number }>({});
   const sortName = sort === 'bloodSugar' ? '공복 혈당' : sort === 'food' ? '식단' : sort === 'exercise' ? '운동' : '종합';
@@ -157,4 +157,4 @@ const Modal = ( { sort, dateKey } : { sort:sort, dateKey : string} ) => {
   )
 };
 
-export default Modal;
+export default WeekModal;
