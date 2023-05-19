@@ -1,9 +1,6 @@
-import CustomCalendar from "../CustomCalendar";
 import Monthly from "../Monthly";
-import WeekCalendar from "../WeekCalendar";
 import Weekly from "../Weekly";
 import DailyBloodSugar from "./DailyBloodSugar";
-import { useState, useEffect } from 'react'
 
 const BloodSugar = () => {
   return(
@@ -22,15 +19,14 @@ const BloodSugar = () => {
         </nav>
       </div>
       <div className="mt-3">
-        {/* <div className="">혈당</div> */}
         <div id="tabs-with-underline-1" role="tabpanel" aria-labelledby="tabs-with-underline-item-1">
           <DailyBloodSugar></DailyBloodSugar>
         </div>
         <div id="tabs-with-underline-2" className="hidden" role="tabpanel" aria-labelledby="tabs-with-underline-item-2">
-          <Weekly></Weekly>
+          <Weekly sort='bloodSugar'></Weekly>
         </div>
         <div id="tabs-with-underline-3" className="hidden" role="tabpanel" aria-labelledby="tabs-with-underline-item-3">
-          <Monthly kind="bloodsugar"></Monthly>
+          <Monthly sort="bloodSugar"></Monthly>
         </div>
       </div>
     </section>

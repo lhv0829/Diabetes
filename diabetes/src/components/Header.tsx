@@ -20,27 +20,19 @@ const Header = () => {
         setIsLogin(false);
         localStorage.setItem('isLogin', 'false');
         localStorage.removeItem('Email');
-        
-        console.log(`로그아웃 & isLogin:${isLogin}`);
     } catch(error){
         alert(`Unexpected Error : ${error}`)
     }
   };
-  // useEffect(() => {
-  //   setIsLogin(Boolean(localStorage.getItem('isLogin')));
-  // }, []);
 
 
   useEffect(() => {
     const checkLoginState = () => {
       if(auth.currentUser){
         setIsLogin(true);
-        // setIsLogin(Boolean(localStorage.getItem('isLogin')));
         localStorage.setItem('isLogin', 'true');
-        console.log(`로그인된 상태 ${auth.currentUser}`);
       } else {
         setIsLogin(false);
-        console.log(`로그인 안된 상태 ${auth.currentUser}`);
         localStorage.setItem('isLogin', 'true');
       }
     };
@@ -79,6 +71,7 @@ const Header = () => {
             <Link className="font-medium text-white/[.8] hover:text-white sm:py-6" to={`${isLogin ? '/bloodsugar' : '/login'}`}>혈당</Link>
             <Link className="font-medium text-white/[.8] hover:text-white sm:py-6" to={`${isLogin ? '/diet' : '/login'}`}>식단</Link>
             <Link className="font-medium text-white/[.8] hover:text-white sm:py-6" to={`${isLogin ? '/exercise' : '/login'}`}>운동</Link>
+            <Link className="font-medium text-white/[.8] hover:text-white sm:py-6" to={`${isLogin ? '/total' : '/login'}`}>종합</Link>
 
             {
               isLogin ?

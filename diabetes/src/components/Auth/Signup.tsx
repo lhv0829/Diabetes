@@ -1,11 +1,11 @@
 
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import InputInfo from "./InputInfo";
 
 import SignUpModal from "./SignUpModal";
 import { useEffect, useState } from "react";
 
-import { createUserWithEmailAndPassword, getAuth, fetchSignInMethodsForEmail } from 'firebase/auth'
+import { createUserWithEmailAndPassword, getAuth, fetchSignInMethodsForEmail, signInWithEmailAndPassword } from 'firebase/auth'
 import { FirebaseError } from "firebase/app";
 
 const Signup = () => {
@@ -15,9 +15,10 @@ const Signup = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [pass, setPass] = useState(false);
   const [duplicateCheck, setDuplicateCheck] = useState(false);
+  const navigate = useNavigate();
 
   const auth = getAuth();
-  const modalCheck = document.querySelector('#my-modal-6') as HTMLInputElement;
+  // const modalCheck = document.querySelector('#my-modal-6') as HTMLInputElement;
 
   useEffect(() => {
     if(password === confirmPassword) setPass(true);
@@ -30,7 +31,11 @@ const Signup = () => {
     try{
       if(pass && duplicateCheck){
         const user = await createUserWithEmailAndPassword(auth, email, password);
-        modalCheck.click();
+        await signInWithEmailAndPassword(auth, email, password);
+        localStorage.setItem('isLogin', 'true');
+        localStorage.setItem('Email', email);
+        navigate('/')
+        // modalCheck.click();
       } else {
         if(!pass) alert('비밀번호가 일치하지 않습니다.');
         else if(!duplicateCheck) alert('이메일 중복을 확인해주세요.');

@@ -1,10 +1,10 @@
-import Weekly from "../Weekly";
 import Monthly from "../Monthly";
+import Weekly from "../Weekly";
+import DailyTotal from "./DailyTotal";
 
-const Exercise = () => {
-  
+const Total = () => {
   return(
-    <section className="mb-6">
+    <section className=" mb-6">
       <div className="border-b border-gray-200 dark:border-gray-700">
         <nav className="flex space-x-2" aria-label="Tabs" role="tablist">
           <button type="button" className="hs-tab-active:font-semibold hs-tab-active:border-blue-600 hs-tab-active:text-blue-600 py-4 px-1 inline-flex items-center justify-center gap-2 border-b-[3px] border-transparent text-sm whitespace-nowrap text-gray-500 hover:text-blue-600 w-16 active" id="tabs-with-underline-item-1" data-hs-tab="#tabs-with-underline-1" aria-controls="tabs-with-underline-1" role="tab">
@@ -18,22 +18,20 @@ const Exercise = () => {
           </button>
         </nav>
       </div>
-
       <div className="mt-3">
         <div id="tabs-with-underline-1" role="tabpanel" aria-labelledby="tabs-with-underline-item-1">
-          <p className="text-gray-500 dark:text-gray-400">
-            This is the <em className="font-semibold text-gray-800 dark:text-gray-200">first</em> item's tab body.
-          </p>
+          <DailyTotal></DailyTotal>
         </div>
         <div id="tabs-with-underline-2" className="hidden" role="tabpanel" aria-labelledby="tabs-with-underline-item-2">
-          <Weekly sort="exercise"/>
+          <Weekly sort='total'></Weekly>
         </div>
         <div id="tabs-with-underline-3" className="hidden" role="tabpanel" aria-labelledby="tabs-with-underline-item-3">
-          <Monthly sort="exercise"/>
+          <Monthly sort="total"></Monthly>
         </div>
       </div>
     </section>
+
   )
 };
 
-export default Exercise;
+export default Total;

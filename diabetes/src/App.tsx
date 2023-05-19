@@ -11,10 +11,11 @@ import Diet from './components/Diet/Diet'
 import BloodSugar from './components/BloodSugar/BloodSugar'
 import Exercise from './components/Exercise/Exercise'
 import CustomCalendar from './components/CustomCalendar'
-import Week from './components/Week'
+import Week from './components/WeekCalendar'
 import WeekCalendar from './components/WeekCalendar'
 import Timeline from './components/Timeline'
 import Example from './components/Example'
+import Total from './components/total/Total'
 
 function App() {
 
@@ -45,8 +46,9 @@ function App() {
                 <Route path='/diet' element={<Diet></Diet>}></Route>
                 <Route path='/bloodsugar' element={<BloodSugar></BloodSugar>}></Route>
                 <Route path='/exercise' element={<Exercise></Exercise>}></Route>
-                <Route path='/week' element={<WeekCalendar></WeekCalendar>}></Route>
+                {/* <Route path='/week' element={<WeekCalendar></WeekCalendar>}></Route> */}
                 <Route path='/timeline' element={<Timeline></Timeline>}></Route>
+                <Route path='/total' element={<Total></Total>}></Route>
                 {/* <Route path='/example' element={<Example></Example>}></Route> */}
               </Routes>
             </section>

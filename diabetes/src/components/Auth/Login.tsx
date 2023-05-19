@@ -4,17 +4,14 @@ import { useState } from "react";
 // import firebase from '../firebase'
 import { getAuth, signInWithEmailAndPassword, setPersistence, browserSessionPersistence, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { FirebaseError } from "firebase/app";
-import { loginState } from "../../atom/loginState";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
-import { loginAccount } from "../../atom/loginAccount";
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isLogin, setIsLogin] = useRecoilState(loginState);
+
   const navigate = useNavigate();
   // const [loginEmail, setLoginEmail] = useRecoilState(loginAccount);
-  const [loginEmail, setLoginEmail] = useRecoilState(loginAccount);
+
 
   const auth = getAuth();
 
@@ -24,14 +21,8 @@ const Login = () => {
       await setPersistence(auth, browserSessionPersistence);
       const user = await signInWithEmailAndPassword(auth, email, password);
       navigate('/');
-      setIsLogin(true);
       localStorage.setItem('isLogin', 'true');
       localStorage.setItem('Email', email);
-      setLoginEmail(localStorage.getItem('Email') as string);
-      console.log(`로그인 & isLogin:${isLogin}`);
-      console.log(`${email} && ${typeof email}`);
-      console.log(`email : ${localStorage.getItem('Email')} && isLogin : ${localStorage.getItem('isLogin')}`);
-      setTimeout(() => console.log(`${loginEmail} && isLogin : ${isLogin}`), 1000);
     } catch(error){
       if(error instanceof FirebaseError){
         if(error.code === 'auth/wrong-password'){

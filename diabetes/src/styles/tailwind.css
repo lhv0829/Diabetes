@@ -17,3 +17,11 @@
 .footer{
   flex-shrink: 0;
 }
+
+.p-inputtext{
+  text-align: center;
+}
+
+#selected-date{
+  text-align: center;
+}

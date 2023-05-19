@@ -35,7 +35,6 @@ const DailyBloodSugar = () => {
       try {
         const query = await onSnapshot(documentRef, (doc) => {
           setData(doc.data()?.dates);
-          console.log(doc.data()?.dates);
         });
       } catch (e) {
         console.error("Error adding document: ", e);
@@ -61,7 +60,7 @@ const DailyBloodSugar = () => {
         <h3 className="my-6 text-3xl font-bold flex gap-2 text-gray-800 dark:text-gray-200">
           <BsFileEarmarkMedical/>공복 혈당
         </h3>
-        <div className="my-6 border w-64 h-24 text-3xl flex justify-center items-center">
+        <div className="my-6 w-64 h-24 text-3xl flex justify-center items-center">
           {data && data[dateKey] && data[dateKey].bloodSugar ? data[dateKey].bloodSugar : 0}
         </div>
         <button type="button" className="py-3 px-4 my-6 inline-flex w-24 justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all text-sm dark:focus:ring-offset-gray-800" data-hs-overlay="#hs-slide-down-animation-modal">
