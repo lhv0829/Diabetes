@@ -4,7 +4,6 @@ import { firestore } from "../../firebase";
 
 const BloodSugarInputModal = ( { date } : { date : Date} ) => {
   const email = localStorage.getItem('Email') as string;
-  const [loginEmail, setLoginEmail] = useState(email);
   const [bloodsugar, setBloodsugar] = useState(0);
   const dateKey = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
   const [value, setValue] = useState('');
@@ -19,7 +18,7 @@ const BloodSugarInputModal = ( { date } : { date : Date} ) => {
   const AddBloodsugar = async(e : React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const docRef = await setDoc(doc(firestore, "users", loginEmail), {
+      const docRef = await setDoc(doc(firestore, "users", email), {
           "dates": {
             [dateKey]: {
               "bloodSugar": bloodsugar
@@ -37,7 +36,7 @@ const BloodSugarInputModal = ( { date } : { date : Date} ) => {
         <div className="hs-overlay-open:mt-7 hs-overlay-open:opacity-100 hs-overlay-open:duration-500 mt-0 opacity-0 ease-out transition-all sm:max-w-lg sm:w-full m-3 sm:mx-auto">
           <div className="flex flex-col bg-white border shadow-sm rounded-xl dark:bg-gray-800 dark:border-gray-700 dark:shadow-slate-700/[.7]">
             <div className="flex justify-between items-center py-3 px-4 border-b dark:border-gray-700">
-              <h3 className="font-bold text-gray-800 dark:text-white">
+              <h3 className="font-bold text-gray-800 dark:text-white flex">
                 공복혈당 입력
               </h3>
               <button type="button" className="hs-dropdown-toggle inline-flex flex-shrink-0 justify-center items-center h-8 w-8 rounded-md text-gray-500 hover:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 focus:ring-offset-white transition-all text-sm dark:focus:ring-gray-700 dark:focus:ring-offset-gray-800" data-hs-overlay="#hs-slide-down-animation-modal">

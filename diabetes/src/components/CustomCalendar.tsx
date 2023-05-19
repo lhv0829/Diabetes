@@ -2,39 +2,30 @@ import React, { useState,useEffect } from 'react';
 import { firestore } from "../firebase";
 import { collection, doc, onSnapshot } from "firebase/firestore";
 import { CiForkAndKnife } from 'react-icons/Ci'
+import { BsFileEarmarkMedical } from 'react-icons/bs'
 import { MdOutlineSportsScore } from 'react-icons/md'
 import { BiCheck, BiCaretLeft, BiCaretRight } from 'react-icons/bi'
-import DatePicker from 'react-datepicker'
-import 'react-datepicker/dist/react-datepicker.css';
 import { Calendar } from 'primereact/calendar';
 import "primereact/resources/primereact.min.css";
 import "primereact/resources/themes/lara-light-indigo/theme.css"; 
+import { sort } from './constants/constants';
+import Modal from './Modal'
+import TestModal from './TestModal';
 
 
-const CustomCalendar = ({ kind } : { kind : string}) => {
+const CustomCalendar = ({ sort, onDateChange } : { sort : sort, onDateChange:(date:Date) => void}) => {
   const email = localStorage.getItem('Email') as string;
-  const [loginEmail, setLoginEmail] = useState<string>(email);
   const [date, setDate] = useState<Date>(new Date());
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedDateKey, setSelectedDateKey] = useState<string>('')
-  const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
   const [data, setData] = useState({});
-  const [isModal, setIsModal] = useState<boolean>(false);
+  const [isBloodSugar, setIsBloodSugar] = useState<boolean>(false);
+  const [isFood, setIsFood] = useState<boolean>(false);
+  const [isExercise, setIsExercise] = useState<boolean>(false);
+  const [modalDate, setModalDate] = useState('');
+  // const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const monthNames = [
-    '1월',
-    '2월',
-    '3월',
-    '4월',
-    '5월',
-    '6월',
-    '7월',
-    '8월',
-    '9월',
-    '10월',
-    '11월',
-    '12월'
-  ];
+
 
   const daysInMonth = (month : number, year : number) => {
     return new Date(year, month + 1, 0).getDate();
@@ -54,60 +45,57 @@ const CustomCalendar = ({ kind } : { kind : string}) => {
 
   const handleDateChange = (date : Date) => {
     setSelectedDate(date);
+    onDateChange(date);
     setDate(new Date(date.getFullYear(), date.getMonth(), 1));
-    setShowDatePicker(false);
+    // setShowDatePicker(false);
   };
 
-  const handleToggleDatePicker = () => {
-    setShowDatePicker(!showDatePicker);
+  const handleDivClick = (clickedDate : string) => {
+    
+    const button = document.querySelector('button[data-hs-overlay="#hs-modal-recover-account"]') as HTMLButtonElement;
+    if (button) {
+      button.click();
+    }
+    setModalDate(clickedDate);
   };
+
+  // useEffect(() => {
+  //   const modal = document.querySelector('#hs-cookies') as HTMLDivElement;
+  //   if(modal) modal.classList.remove('.hidden');
+  // },[isModalOpen]);
 
   useEffect(() => {
     const getData = async() => {
-      const documentRef = doc(collection(firestore, 'users'), loginEmail);
+      const documentRef = doc(collection(firestore, 'users'), email);
       try{
         const query = await onSnapshot(documentRef, (doc) => {
           setData(doc.data()?.dates);
-          console.log(doc.data()?.dates);
+          // console.log(doc.data()?.dates);
         });
       } catch(e) {
         console.log(e);
       }
     };
     getData();
-  },[]);
-
-  const dietCalendar = (year:number, month:number, day:number):boolean => {
-    const dateKey = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
-    let dayData = null;
-    if (data && data[dateKey]) {
-      dayData = data[dateKey];
+    if(sort === 'food'){
+      setIsFood(true);
+      setIsBloodSugar(false);
+      setIsExercise(false);
+    } else if(sort === 'bloodSugar') {
+      setIsFood(false);
+      setIsBloodSugar(true);
+      setIsExercise(false);
+    } else if(sort === 'exercise') {
+      setIsFood(false);
+      setIsBloodSugar(false);
+      setIsExercise(true);
+    } else if(sort === 'total') {
+      setIsFood(true);
+      setIsBloodSugar(true);
+      setIsExercise(true);
     }
-    if(dayData !== null && dayData.food !== undefined) return true;
-    else return false;
-  };
+  },[date]);
 
-  const exerciseCalendar = (year:number, month:number, day:number):boolean => {
-    const dateKey = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
-    let dayData = null;
-    if (data && data[dateKey]) {
-      dayData = data[dateKey];
-    }
-
-    if(dayData !== null && dayData.exercise !== undefined) return true;
-    else return false;
-  };
-
-  const bloodSugarCalendar = (year:number, month:number, day:number):boolean => {
-    const dateKey = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
-    let dayData = null;
-    if (data && data[dateKey]) {
-      dayData = data[dateKey];
-    }
-
-    if(dayData !== null && dayData.bloodSugar !== undefined) return true;
-    else return false;
-  };
   const handleDayClick = (year:number, month:number, day:number) => {
     setSelectedDateKey(`${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`)
   };
@@ -127,21 +115,36 @@ const CustomCalendar = ({ kind } : { kind : string}) => {
       const year = date.getFullYear();
       const dateKey = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
       const isToday = day === new Date().getDate() && month === new Date().getMonth() && year === new Date().getFullYear();
-      
-      const food = kind === 'food' && dietCalendar(year, month, day);
-      const exercise = kind === 'exercise' && exerciseCalendar(year, month, day);
-      const bloodsugar = kind === 'bloodsugar' && bloodSugarCalendar(year, month, day);
 
       days.push(
-        <div className={`day w-full h-16 border`} onClick={() => handleDayClick(year, month, day)} key={`${year}-${month}-${day}`}>
-          <div className={`day-number rounded-full w-6 h-6 ${isToday ? 'bg-blue-300' : ''}`}>{day}</div>
-          <div className="day-details">
-            {food && <CiForkAndKnife></CiForkAndKnife>}
-            {exercise && <MdOutlineSportsScore></MdOutlineSportsScore>}
-            {bloodsugar && <BiCheck></BiCheck>}
-            {/* <textarea className="diet-input bg-white border rounded-lg p-2 m-2" placeholder="Enter diet" value={diet} onChange={handleDietChange} />
-            <textarea className="exercise-input bg-white border rounded-lg p-2 m-2" placeholder="Enter exercise" value={exercise} onChange={handleExerciseChange} /> */}
+        <div className={`day w-full h-40 max-md:h-20 border`} 
+          onClick={() => {
+            handleDayClick(year, month, day);
+            handleDivClick(dateKey);
+          }} 
+          key={`${year}-${month}-${day}`}>
+          <div className={`day-number rounded-full w-6 h-6 ${isToday ? 'bg-green-300' : ''}`}>{day}</div>
+          <div className="day-details mt-1">
+            <div className='max-md:hidden'>
+              {(data && data[dateKey] && data[dateKey].bloodSugar && isBloodSugar) && <p>{`공복 혈당 : ${data[dateKey].bloodSugar}`}</p>}
+              {(data && data[dateKey] && data[dateKey].foodCalories && isFood) && <p>{`섭취 칼로리 : ${data[dateKey].foodCalories}`}</p>}
+              {(data && data[dateKey] && data[dateKey].exerciseCalories && isExercise) && <p>{`소모 칼로리 : ${data[dateKey].exerciseCalories}`}</p>}
+            </div>
+            <div className='md:hidden flex mt-2'>
+              {(data && data[dateKey] && data[dateKey].bloodSugar && isBloodSugar) && <BsFileEarmarkMedical/>}
+              {(data && data[dateKey] && data[dateKey].foodCalories && isFood) && <CiForkAndKnife/>}
+              {(data && data[dateKey] && data[dateKey].exerciseCalories && isExercise) && <MdOutlineSportsScore/>}
+            </div>
           </div>
+          {/* <button type="button" className="py-3 px-4 hidden justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all text-sm dark:focus:ring-offset-gray-800" data-hs-overlay="#hs-cookies">
+            수정하기
+          </button> */}
+          {/* <button type="button" className="py-3 px-4 hidden justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all text-sm dark:focus:ring-offset-gray-800" data-hs-overlay="#hs-cookies">
+            Open modal
+          </button> */}
+          <button type="button" className="py-3 px-4 hidden justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all text-sm dark:focus:ring-offset-gray-800" data-hs-overlay="#hs-modal-recover-account">
+            Open modal
+          </button>
         </div>
       );
     }
@@ -152,18 +155,13 @@ const CustomCalendar = ({ kind } : { kind : string}) => {
   return (
     <div className="calendar bg-white rounded-lg shadow-lg">
       <div className=' px-5'>
-        <div className='flex w-96 bg-white'>
-          <Calendar value={selectedDate} onChange={(e) => handleDateChange(e.target.value as Date)} view="month" dateFormat="mm/yy" />
-        </div>
       </div>
       <div className="header flex justify-center gap-8 p-4 border-b">
         <button className="previous-month text-2xl text-blue-800" onClick={handlePreviousMonth}>
           <BiCaretLeft></BiCaretLeft>
         </button>
-        <div className="month-year text-lg font-medium">
-          <h2>
-            {date.getFullYear()} {monthNames[date.getMonth()]} 
-          </h2>
+        <div className='flex bg-white'>
+          <Calendar value={date} onChange={(e) => handleDateChange(e.target.value as Date)} view="month" dateFormat="mm/yy" />
         </div>
         <button className="next-month text-2xl text-blue-800" onClick={handleNextMonth}>
           <BiCaretRight></BiCaretRight>
@@ -178,7 +176,16 @@ const CustomCalendar = ({ kind } : { kind : string}) => {
         <div>Fri</div>
         <div>Sat</div>
       </div>
-      <div className="calendar-days grid grid-cols-7">{renderCalendarDays()}</div>
+      <div className="calendar-days grid grid-cols-7">
+        {renderCalendarDays()}
+      </div>
+      {/* <div className="text-center">
+        <button type="button" className="py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all text-sm dark:focus:ring-offset-gray-800" data-hs-overlay="#hs-modal-recover-account">
+          Open modal
+        </button>
+      </div> */}
+      {/* <Modal sort={sort} dateKey={modalDate}></Modal>   */}
+      <TestModal dateKey={modalDate} sort={sort}></TestModal>
     </div>
   );
 };
