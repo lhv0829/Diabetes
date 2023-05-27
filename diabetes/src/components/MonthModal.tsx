@@ -107,7 +107,7 @@ const MonthModal = ( { sort, dateKey } : { sort:sort, dateKey : string} ) => {
                   { (sort === 'bloodSugar' || sort === 'exercise' || sort === 'food') &&
                     <input 
                     type={sort === 'bloodSugar' ? 'number' : 'text'}
-                    id={sort}
+                    id={`monthly-${sort}`}
                     onChange={handleInputChange}
                     value={formData[sort] || ''}
                     placeholder="Type here" 
@@ -119,7 +119,7 @@ const MonthModal = ( { sort, dateKey } : { sort:sort, dateKey : string} ) => {
                         <label htmlFor="bloodSugar" className="w-28 flex items-center">공복 혈당</label>
                         <input 
                           type={'number'}
-                          id={'bloodSugar'}
+                          id={'monthly-bloodSugar'}
                           onChange={handleInputChange}
                           value={formData.bloodSugar || ''}
                           placeholder="Type here" 
@@ -129,7 +129,7 @@ const MonthModal = ( { sort, dateKey } : { sort:sort, dateKey : string} ) => {
                         <label htmlFor="bloodSugar" className="w-28 flex items-center">식단</label>
                           <input 
                             type={'text'}
-                            id={'food'}
+                            id={'monthly-food'}
                             onChange={handleInputChange}
                             value={formData.food || ''}
                             placeholder="Type here" 
@@ -139,7 +139,7 @@ const MonthModal = ( { sort, dateKey } : { sort:sort, dateKey : string} ) => {
                         <label htmlFor="bloodSugar" className="w-28 flex items-center">운동</label>
                         <input 
                           type={'text'}
-                          id={'exercise'}
+                          id={'monthly-exercise'}
                           onChange={handleInputChange}
                           value={formData.exercise || ''}
                           placeholder="Type here" 

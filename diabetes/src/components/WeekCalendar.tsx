@@ -90,11 +90,11 @@ const WeekCalendar = ({date, sort}:{date:Date, sort:sort}) => {
               </div>
               <div className='h-36 leading-5'>
                 <div className='max-md:hidden flex flex-col gap-1'>
-                  {(data && data[dateKey] && data[dateKey].bloodSugar && isBloodSugar) && <p>{`공복 혈당 : ${data[dateKey].bloodSugar}`}</p>}
-                  {(data && data[dateKey] && data[dateKey].foodCalories && isFood) && <p>{`섭취 칼로리 : ${data[dateKey].foodCalories}`}</p>}
-                  {(data && data[dateKey] && data[dateKey].exerciseCalories && isExercise) && <p>{`소모 칼로리 : ${data[dateKey].exerciseCalories}`}</p>}
+                  {(data && data[dateKey] && data[dateKey].bloodSugar && isBloodSugar) && <p>{`공복 혈당 : ${data[dateKey].bloodSugar}kcal`}</p>}
+                  {(data && data[dateKey] && data[dateKey].foodCalories && isFood) && <p>{`섭취 칼로리 : ${data[dateKey].foodCalories}kcal`}</p>}
+                  {(data && data[dateKey] && data[dateKey].exerciseCalories && isExercise) && <p>{`소모 칼로리 : ${data[dateKey].exerciseCalories}kcal`}</p>}
                 </div>
-                <div className='md:hidden flex mt-2 flex-col gap-2 text-xl'>
+                <div className='md:hidden flex mt-2 flex-col gap-2 text-lg'>
                   {(data && data[dateKey] && data[dateKey].bloodSugar && isBloodSugar) && <div className='flex text-xl'><span className='flex items-center'><BsFileEarmarkMedical/></span><p className='max-md:text-lg'>{data[dateKey].bloodSugar}</p></div>}
                   {(data && data[dateKey] && data[dateKey].foodCalories && isFood) && <div className='flex text-xl'><span className='flex items-center'><CiForkAndKnife/></span><p className='max-md:text-lg'>{data[dateKey].foodCalories}</p></div>}
                   {(data && data[dateKey] && data[dateKey].exerciseCalories && isExercise) && <div className='flex text-xl'><span className='flex items-center'><MdOutlineSportsScore/></span><p className='max-md:text-lg'>{data[dateKey].exerciseCalories}</p></div>}

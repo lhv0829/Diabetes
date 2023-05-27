@@ -122,12 +122,12 @@ const CustomCalendar = ({ sort, onDateChange } : { sort : sort, onDateChange:(da
             handleDivClick(dateKey);
           }} 
           key={`${year}-${month}-${day}`}>
-          <div className={`day-number rounded-full w-6 h-6 ${isToday ? 'bg-green-300' : ''}`}>{day}</div>
+          <div className={`day-number rounded-full w-6 h-6 ${isToday ? 'bg-green-300' : ''} text-center`}>{day}</div>
           <div className="day-details mt-1">
             <div className='max-md:hidden'>
-              {(data && data[dateKey] && data[dateKey].bloodSugar && isBloodSugar) && <p>{`공복 혈당 : ${data[dateKey].bloodSugar}`}</p>}
-              {(data && data[dateKey] && data[dateKey].foodCalories && isFood) && <p>{`섭취 칼로리 : ${data[dateKey].foodCalories}`}</p>}
-              {(data && data[dateKey] && data[dateKey].exerciseCalories && isExercise) && <p>{`소모 칼로리 : ${data[dateKey].exerciseCalories}`}</p>}
+              {(data && data[dateKey] && data[dateKey].bloodSugar && isBloodSugar) && <p className=' text-sm'>{`공복 혈당 : ${data[dateKey].bloodSugar}`}</p>}
+              {(data && data[dateKey] && data[dateKey].foodCalories && isFood) && <p className=' text-sm'>{`섭취 칼로리 : ${data[dateKey].foodCalories}kcal`}</p>}
+              {(data && data[dateKey] && data[dateKey].exerciseCalories && isExercise) && <p className=' text-sm'>{`소모 칼로리 : ${data[dateKey].exerciseCalories}kcal`}</p>}
             </div>
             <div className='md:hidden flex mt-2'>
               {(data && data[dateKey] && data[dateKey].bloodSugar && isBloodSugar) && <BsFileEarmarkMedical/>}

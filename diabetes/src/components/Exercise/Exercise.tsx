@@ -1,5 +1,6 @@
 import Weekly from "../Weekly";
 import Monthly from "../Monthly";
+import DailyExercise from "./DailyExercise";
 
 const Exercise = () => {
   
@@ -21,9 +22,7 @@ const Exercise = () => {
 
       <div className="mt-3">
         <div id="tabs-with-underline-1" role="tabpanel" aria-labelledby="tabs-with-underline-item-1">
-          <p className="text-gray-500 dark:text-gray-400">
-            This is the <em className="font-semibold text-gray-800 dark:text-gray-200">first</em> item's tab body.
-          </p>
+          <DailyExercise></DailyExercise>
         </div>
         <div id="tabs-with-underline-2" className="hidden" role="tabpanel" aria-labelledby="tabs-with-underline-item-2">
           <Weekly sort="exercise"/>

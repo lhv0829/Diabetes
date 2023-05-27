@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { API_KEY, APP_ID } from "./constants/constants";
+import { NUT_API_KEY, APP_ID } from "./constants/constants";
 // import {} from 'nutritionix-api'
 
 const CheckAPI = () => {
@@ -8,7 +8,8 @@ const CheckAPI = () => {
   const [exerciseResults, setExerciseResults] = useState([]);
   const [food, setFood] = useState<string>("");
 	const [exercise, setExercise] = useState('');
-	// const BASE_URL = 'https://api.spoonacular.com/';
+	// const [image, setImage] = useState<File>();
+	// const BASE_IMAGE_URL = `https://api.spoonacular.com/food/images/classify?apiKey = ${SPOON_API_KEY}`;
 	const BASE_FOOD_URL = 'https://trackapi.nutritionix.com/v2/natural/nutrients';
 	const BASE_EXERCISE_URL = 'https://trackapi.nutritionix.com/v2/natural/exercise';
 
@@ -20,12 +21,12 @@ const CheckAPI = () => {
 			const response = await axios.post(BASE_FOOD_URL, { query : food},{
 				headers: {
 					'x-app-id': APP_ID,
-					'x-app-key': API_KEY,
+					'x-app-key': NUT_API_KEY,
 					'x-remote-user-id' : '0'
 				}
 			});
 			console.log(`음식 결과는?`);
-			console.log(response);
+			console.log(response.data.foods[0].nf_calories);
 			setFoodResults(response.data.foods);
 			// console.log(results);
 		} catch (e) {
@@ -33,6 +34,29 @@ const CheckAPI = () => {
 			setFoodResults([]);
 		}
 	}
+
+	// const handleImageChange = (e : React.ChangeEvent<HTMLInputElement>) => {
+	// 	const file = e.target.files[0] as File;
+	// 	setImage(file);
+	// };
+
+	// const handleImageFormSubmit =async (e:React.FormEvent) => {
+	// 	e.preventDefault();
+	// 	// const url = `https://api.nutritionix.com/v1_1/search/${encodeURIComponent(food)}?results=0:1&fields=item_name,nf_calories&appId=${APP_ID}&appKey=${API_KEY}`
+	// 	try {
+	// 		console.log(image);
+	// 		const response = await axios.post(BASE_IMAGE_URL, { file : image});
+	// 		console.log(`사진 결과는?`);
+	// 		console.log(response);
+	// 		// setFoodResults(response.data.foods);
+	// 		// console.log(results);
+	// 	} catch (e) {
+	// 		console.log(e);
+	// 		// setFoodResults([]);
+	// 	}
+	// }
+
+
 	const handleExerciseFormSubmit =async (e:React.FormEvent) => {
 		e.preventDefault();
 		// const url = `https://api.nutritionix.com/v1_1/search/${encodeURIComponent(food)}?results=0:1&fields=item_name,nf_calories&appId=${APP_ID}&appKey=${API_KEY}`
@@ -41,12 +65,13 @@ const CheckAPI = () => {
 			const response = await axios.post(BASE_EXERCISE_URL, { query : exercise},{
 				headers: {
 					'x-app-id': APP_ID,
-					'x-app-key': API_KEY,
+					'x-app-key': NUT_API_KEY,
 					'x-remote-user-id' : '0'
 				}
 			});
 			console.log(`운동 결과는?`);
-			console.log(response);
+			// console.log(response.data.exercises[0].nf_calories);
+			console.log((response.data.exercises[0].nf_calories / response.data.exercises[0].duration_min)*30);
 			setExerciseResults(response.data.exercises);
 			// console.log(results);
 		} catch (e) {
@@ -55,15 +80,15 @@ const CheckAPI = () => {
 		}
 	}
 
-	useEffect(() => {
-		console.log(`response.data.exercise?`);
-		console.log(exerciseResults);
-	}, [exerciseResults]);
+	// useEffect(() => {
+	// 	console.log(`response.data.exercise?`);
+	// 	console.log(exerciseResults);
+	// }, [exerciseResults]);
 
-	useEffect(() => {
-		console.log(`response.data.foods?`);
-		console.log(foodResults);
-	}, [foodResults]);
+	// useEffect(() => {
+	// 	console.log(`response.data.foods?`);
+	// 	console.log(foodResults);
+	// }, [foodResults]);
 
   return( 
 		<>
@@ -79,6 +104,13 @@ const CheckAPI = () => {
 					<button className="btn" type="submit">제출</button>
 				</form>
 			</div>
+			{/* <div className="border w-96 h-36">
+				<form onSubmit={handleImageFormSubmit}>
+					<input type="file" accept="image/*" onChange={handleImageChange} className="file-input w-full max-w-xs" />
+					<button className="btn" type="submit">제출</button>
+				</form>
+				{image && (<img src={image} alt="Selected" />)}
+			</div> */}
 			<div className="border w-96 h-36">
 				<form onSubmit={handleExerciseFormSubmit}>
 					<input 

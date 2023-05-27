@@ -89,8 +89,9 @@ const WeekModal = ( { sort, dateKey } : { sort:sort, dateKey : string} ) => {
 
             <div className="p-4 sm:p-10 text-center overflow-y-auto">
               <h3 className="mb-2 text-2xl font-bold text-gray-800 dark:text-gray-200">
-                {`${dateKey} ${sortName}`}
+                {dateKey}
               </h3>
+              <p className="text-xl font-semibold">{sortName}</p>
             </div>
             <form>
               <div className="flex flex-col gap-4">
@@ -98,10 +99,10 @@ const WeekModal = ( { sort, dateKey } : { sort:sort, dateKey : string} ) => {
                   { (sort === 'bloodSugar' || sort === 'exercise' || sort === 'food') &&
                     <input 
                     type={sort === 'bloodSugar' ? 'number' : 'text'}
-                    id={sort}
+                    id={`weekly-${sort}`}
                     onChange={handleInputChange}
                     value={formData[sort] || ''}
-                    placeholder="Type here" 
+                    // placeholder="Type here" 
                     className="input input-bordered input-accent w-full max-w-xs" />}
                   {
                     (sort === 'total') && ( 
@@ -110,27 +111,27 @@ const WeekModal = ( { sort, dateKey } : { sort:sort, dateKey : string} ) => {
                         <label htmlFor="bloodSugar" className="w-28 flex items-center">공복 혈당</label>
                         <input 
                           type={'number'}
-                          id={'bloodSugar'}
+                          id={'weekly-bloodSugar'}
                           onChange={handleInputChange}
                           value={formData.bloodSugar || ''}
                           placeholder="Type here" 
                           className="input input-bordered input-accent w-full max-w-xs" />
                       </div>
                       <div className="flex gap-2">
-                        <label htmlFor="bloodSugar" className="w-28 flex items-center">식단</label>
+                        <label htmlFor="food" className="w-28 flex items-center">식단</label>
                           <input 
                             type={'text'}
-                            id={'food'}
+                            id={'weekly-food'}
                             onChange={handleInputChange}
                             value={formData.food || ''}
                             placeholder="Type here" 
                             className="input input-bordered input-accent w-full max-w-xs" />
                       </div>
                       <div className="flex gap-2">
-                        <label htmlFor="bloodSugar" className="w-28 flex items-center">운동</label>
+                        <label htmlFor="exercise" className="w-28 flex items-center">운동</label>
                         <input 
                           type={'text'}
-                          id={'exercise'}
+                          id={'weekly-exercise'}
                           onChange={handleInputChange}
                           value={formData.exercise || ''}
                           placeholder="Type here" 

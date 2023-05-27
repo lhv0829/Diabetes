@@ -12,19 +12,6 @@ const DailyBloodSugar = () => {
   const [data, setData] = useState({});
   const dateKey = `${selectedDate.getFullYear()}-${(selectedDate.getMonth() + 1).toString().padStart(2, '0')}-${selectedDate.getDate().toString().padStart(2, '0')}`;
 
-
-  const handlePrevDay = () => {
-    const newDate = new Date(selectedDate);
-    newDate.setDate(selectedDate.getDate() - 1);
-    setSelectedDate(newDate);
-  };
-
-  const handleNextDay = () => {
-    const newDate = new Date(selectedDate);
-    newDate.setDate(selectedDate.getDate() + 1);
-    setSelectedDate(newDate);
-  };
-
   const handleDateChange = (date:Date) => {
     setSelectedDate(date);
     };
