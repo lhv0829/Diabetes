@@ -33,7 +33,7 @@ const Header = () => {
         localStorage.setItem('isLogin', 'true');
       } else {
         setIsLogin(false);
-        localStorage.setItem('isLogin', 'true');
+        localStorage.setItem('isLogin', 'false');
       }
     };
   

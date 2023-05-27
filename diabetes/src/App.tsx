@@ -16,6 +16,7 @@ import WeekCalendar from './components/WeekCalendar'
 import Timeline from './components/Timeline'
 import Example from './components/Example'
 import Total from './components/total/Total'
+import Home from './components/Home'
 
 function App() {
 
@@ -37,7 +38,7 @@ function App() {
                 {/* </Routes> */}
               {/* </Suspense> */}
               <Routes>
-                <Route path='/' element={<h1>Diabetes Home Page</h1>}></Route>
+                <Route path='/' element={<Home></Home>}></Route>
                 <Route path='/signup' element={<Signup></Signup>}></Route>
                 {/* <Route path='/login' element={<Login></Login>}></Route> */}
                 <Route path='/login' element={<Login></Login>}></Route>
