@@ -2,72 +2,176 @@ import { setDoc, doc, collection, onSnapshot } from "firebase/firestore";
 import { useEffect, useState } from 'react'
 import { firestore } from "../firebase";
 import { sort } from "./constants/constants";
+import axios from "axios";
+import { NUT_API_KEY, APP_ID } from "./constants/constants";
 
 const WeekModal = ( { sort, dateKey } : { sort:sort, dateKey : string} ) => {
   const email = localStorage.getItem('Email') as string;
-  const [formData, setFormData] = useState<{ [key: string]: string | number }>({});
   const sortName = sort === 'bloodSugar' ? '공복 혈당' : sort === 'food' ? '식단' : sort === 'exercise' ? '운동' : '종합';
+  const BASE_FOOD_URL = 'https://trackapi.nutritionix.com/v2/natural/nutrients'; 
+  const BASE_EXERCISE_URL = 'https://trackapi.nutritionix.com/v2/natural/exercise';
+
+  const [data, setData] = useState({food:[], exercise:[]});
+  const [food, setFood] = useState('');
+  const [exercise, setExercise] = useState('');
+  const [bloodSugar, setBloodSugar] = useState(0);
+  const [foodCalories, setFoodCalories] = useState<number>(0);
+  const [exerciseCalories, setExerciseCalories] = useState<number>(0);
 
   useEffect(() => {
     const getData =async () => {
       const documentRef = doc(collection(firestore, 'users'), email);
       try {
         const query = await onSnapshot(documentRef, (doc) => {
-          setFormData(doc.data()?.dates[dateKey] || {});
+          const dates = doc.data()?.dates;
+          if (sort === 'total') {
+            if (dates && dates[dateKey]) {
+              const totalData = dates[dateKey];
+              setBloodSugar(totalData.bloodSugar || 0);
+              setFoodCalories(totalData.foodCalories || 0);
+              setExerciseCalories(totalData.exerciseCalories || 0);
+              const foodData = totalData.food || [];
+              const exerciseData = totalData.exercise || [];
+              setData({ food: foodData, exercise: exerciseData });
+            } else {
+              setBloodSugar(0);
+              setFoodCalories(0);
+              setExerciseCalories(0);
+              setData({ food: [], exercise: [] });
+            }
+          } else if (sort === 'bloodSugar') {
+            if (dates && dates[dateKey] && dates[dateKey].bloodSugar !== undefined) {
+              setBloodSugar(dates[dateKey].bloodSugar);
+            } else {
+              setBloodSugar(0);
+            }
+          } else if (sort === 'food') {
+            if (dates && dates[dateKey] && dates[dateKey].food) {
+              setData({ food: dates[dateKey].food, exercise: [] });
+              setFoodCalories(dates[dateKey].foodCalories || 0);
+            } else {
+              setData({ food: [], exercise: [] });
+              setFoodCalories(0);
+            }
+          } else if (sort === 'exercise') {
+            if (dates && dates[dateKey] && dates[dateKey].exercise) {
+              setData({ food: [], exercise: dates[dateKey].exercise });
+              setExerciseCalories(dates[dateKey].exerciseCalories || 0);
+            } else {
+              setData({ food: [], exercise: [] });
+              setExerciseCalories(0);
+            }
+          }
         });
       } catch (e) {
         console.error("Error adding document: ", e);
       }
     };
     getData();
-  },[]);
+  },[dateKey]);
 
-  const handleInputChange = async(e : React.ChangeEvent<HTMLInputElement>) => {
-    const { id, value} = e.target;
-    // setFormData(prevData => ({
-    //   ...prevData,
-    //   [id]: value
-    // }));
-    if (sort === 'total') {
-      // Handle separate input fields for 'bloodSugar', 'food', and 'exercise'
-      setFormData((prevData) => ({
-        ...prevData,
-        [id]: value,
-      }));
-    } else {
-      // For other sorts, update the 'sort' directly in formData
-      setFormData({
-        [sort]: value,
-      });
+  const handleUpdateData = (e : React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    try {
+      if (sort === 'total') {
+        AddBloodsugar();
+        AddFood();
+        AddExercise();
+      } else if(sort === 'bloodSugar'){
+        AddBloodsugar();
+      } else if(sort === 'food'){
+        AddFood();
+      } else if(sort === 'exercise'){
+        AddExercise();
+      }
+    } catch (e) {
+      console.error("Error adding document: ", e);
     }
   };
 
-  const handleUpdateData = async(e : React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
+  const AddBloodsugar = async() => {
     try {
-      let updatedData = {};
-
-      if (sort === 'total') {
-        updatedData = {
-          'dates' : {
-            [dateKey] : {
-              [`bloodSugar`]: parseFloat(formData.bloodSugar as string) || '',
-              [`food`]: formData.food || '',
-              [`exercise`]: formData.exercise || '',
+      const docRef = await setDoc(doc(firestore, "users", email), {
+          "dates": {
+            [dateKey]: {
+              "bloodSugar": bloodSugar
             },
-          }
-        };
-      } else {
-        const value = sort === 'bloodSugar' ? parseFloat(formData.bloodSugar as string) : formData[sort];
-        updatedData = {
-          'dates' : {
-            [dateKey] : {
-              [sort]: value || '',
-            }
-          }
-        };
-      }
-      const docRef = await setDoc(doc(firestore, 'users', email), updatedData, { merge: true });
+          }}, { merge: true });
+    } catch (e) {
+      console.error("Error adding document: ", e);
+    }
+  };
+
+  const AddFood = async() => {
+    try {
+      const response = await axios.post(BASE_FOOD_URL, { query : food},{
+				headers: {
+					'x-app-id': APP_ID,
+					'x-app-key': NUT_API_KEY,
+					'x-remote-user-id' : '0'
+				}
+			});
+      const updatedFoodCalories = foodCalories + response.data.foods[0].nf_calories;
+      const updatedData = {
+        "dates": {
+          [dateKey]: {
+            "food": data.food.length === 0 ? [
+              {
+                'name': food,
+                'calory': response.data.foods[0].nf_calories
+              }
+            ] : [
+              ...data.food,
+              {
+                'name': food,
+                'calory': response.data.foods[0].nf_calories
+              }
+            ],
+            'foodCalories': updatedFoodCalories
+          },
+        }
+      };
+      const docRef = await setDoc(doc(firestore, "users", email), updatedData, { merge: true });
+      setData({food : updatedData.dates[dateKey].food, exercise: data.exercise})
+      setFoodCalories(updatedData.dates[dateKey].foodCalories)
+    } catch (e) {
+      console.error("Error adding document: ", e);
+    }
+  };
+
+  const AddExercise = async() => {
+    try {
+      const response = await axios.post(BASE_EXERCISE_URL, { query : exercise},{
+				headers: {
+					'x-app-id': APP_ID,
+					'x-app-key': NUT_API_KEY,
+					'x-remote-user-id' : '0'
+				}
+			});
+      const updatedExerciseCalories = exerciseCalories + Math.floor((response.data.exercises[0].nf_calories / response.data.exercises[0].duration_min) * 30);
+      // setCalory(response.data.foods[0].nf_calories)
+      const updatedData = {
+        "dates": {
+          [dateKey]: {
+            "exercise": data.exercise.length === 0 ? [
+              {
+                'name': exercise,
+                'calory': Math.floor((response.data.exercises[0].nf_calories / response.data.exercises[0].duration_min) * 30)
+              }
+            ] : [
+              ...data.exercise,
+              {
+                'name': exercise,
+                'calory': Math.floor((response.data.exercises[0].nf_calories / response.data.exercises[0].duration_min) * 30)
+              }
+            ],
+            'exerciseCalories': updatedExerciseCalories
+          },
+        }
+      };
+      const docRef = await setDoc(doc(firestore, "users", email), updatedData, { merge: true });
+      setData({food : data.food ,exercise : updatedData.dates[dateKey].exercise})
+      setExerciseCalories(updatedData.dates[dateKey].exerciseCalories)
     } catch (e) {
       console.error("Error adding document: ", e);
     }
@@ -100,40 +204,44 @@ const WeekModal = ( { sort, dateKey } : { sort:sort, dateKey : string} ) => {
                     <input 
                     type={sort === 'bloodSugar' ? 'number' : 'text'}
                     id={`weekly-${sort}`}
-                    onChange={handleInputChange}
-                    value={formData[sort] || ''}
+                    onChange={e => {
+                      if(sort === 'bloodSugar') setBloodSugar(Number(e.target.value));
+                      if(sort === 'food') setFood(e.target.value);
+                      if(sort === 'exercise') setExercise(e.target.value);
+                    }}
+                    value={sort === 'bloodSugar' ? bloodSugar : sort === 'food' ? food : exercise}
                     // placeholder="Type here" 
                     className="input input-bordered input-accent w-full max-w-xs" />}
                   {
                     (sort === 'total') && ( 
                     <div className="flex flex-col gap-2">
                       <div className="flex gap-2">
-                        <label htmlFor="bloodSugar" className="w-28 flex items-center">공복 혈당</label>
+                        <label htmlFor="weekly-bloodSugar" className="w-28 flex items-center">공복 혈당</label>
                         <input 
                           type={'number'}
                           id={'weekly-bloodSugar'}
-                          onChange={handleInputChange}
-                          value={formData.bloodSugar || ''}
+                          onChange={e => setBloodSugar(Number(e.target.value))}
+                          value={bloodSugar}
                           placeholder="Type here" 
                           className="input input-bordered input-accent w-full max-w-xs" />
                       </div>
                       <div className="flex gap-2">
-                        <label htmlFor="food" className="w-28 flex items-center">식단</label>
+                        <label htmlFor="weekly-food" className="w-28 flex items-center">식단</label>
                           <input 
                             type={'text'}
                             id={'weekly-food'}
-                            onChange={handleInputChange}
-                            value={formData.food || ''}
+                            onChange={e => setFood(e.target.value)}
+                            value={food}
                             placeholder="Type here" 
                             className="input input-bordered input-accent w-full max-w-xs" />
                       </div>
                       <div className="flex gap-2">
-                        <label htmlFor="exercise" className="w-28 flex items-center">운동</label>
+                        <label htmlFor="weekly-exercise" className="w-28 flex items-center">운동</label>
                         <input 
                           type={'text'}
                           id={'weekly-exercise'}
-                          onChange={handleInputChange}
-                          value={formData.exercise || ''}
+                          onChange={e => setExercise(e.target.value)}
+                          value={exercise}
                           placeholder="Type here" 
                           className="input input-bordered input-accent w-full max-w-xs" />
                       </div>

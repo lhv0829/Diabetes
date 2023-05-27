@@ -1,10 +1,10 @@
-import { collection, addDoc, setDoc, doc, updateDoc, getDocs, getDoc } from "firebase/firestore";
+import { setDoc, doc } from "firebase/firestore";
 import { useEffect, useState } from 'react'
 import { firestore } from "../../firebase";
 
 const BloodSugarInputModal = ( { date } : { date : Date} ) => {
   const email = localStorage.getItem('Email') as string;
-  const [bloodsugar, setBloodsugar] = useState(0);
+  const [bloodSugar, setBloodSugar] = useState(0);
   const dateKey = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
   const [value, setValue] = useState('');
 
@@ -21,7 +21,7 @@ const BloodSugarInputModal = ( { date } : { date : Date} ) => {
       const docRef = await setDoc(doc(firestore, "users", email), {
           "dates": {
             [dateKey]: {
-              "bloodSugar": bloodsugar
+              "bloodSugar": bloodSugar
             },
           }}, { merge: true });
       handleCloseModal();
@@ -51,7 +51,7 @@ const BloodSugarInputModal = ( { date } : { date : Date} ) => {
               <input 
                 type="text" 
                 onChange={e =>{ 
-                  setBloodsugar(Number(e.target.value));
+                  setBloodSugar(Number(e.target.value));
                   setValue(e.target.value);
                 }} 
                 value={value} 

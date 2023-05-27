@@ -1,80 +1,21 @@
 import { collection, setDoc, doc, onSnapshot } from "firebase/firestore";
 import { useEffect, useState } from 'react'
 import { firestore } from "../../firebase";
+import { sort } from "../constants/constants";
 import axios from "axios";
 import { NUT_API_KEY, APP_ID } from "../constants/constants";
 
-const ExerciseModal = ( { date } : { date : Date} ) => {
-  const email = localStorage.getItem('Email') as string; 
+const DailyTotalModal = ({sort, date} : {sort:sort, date:Date}) => {
+  const email = localStorage.getItem('Email') as string;
+  const BASE_FOOD_URL = 'https://trackapi.nutritionix.com/v2/natural/nutrients'; 
   const BASE_EXERCISE_URL = 'https://trackapi.nutritionix.com/v2/natural/exercise';
+  const sortName = sort === 'bloodSugar' ? '공복 혈당' : sort === 'food' ? '식단' : '운동';
+
   const dateKey = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
   const [value, setValue] = useState('');
-  const [data, setData] = useState([]);
+  const [data, setData] = useState({food:[], exercise:[]});
+  const [foodCalories, setFoodCalories] = useState<number>(0);
   const [exerciseCalories, setExerciseCalories] = useState<number>(0);
-
-  const handleCloseModal = () => {
-    const button = document.querySelector('button[data-hs-overlay="#hs-slide-down-animation-modal"]') as HTMLButtonElement;
-    if (button) {
-      button.click();
-    }
-  };
-  const AddExercise = async(e : React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    try {
-      const response = await axios.post(BASE_EXERCISE_URL, { query : value},{
-				headers: {
-					'x-app-id': APP_ID,
-					'x-app-key': NUT_API_KEY,
-					'x-remote-user-id' : '0'
-				}
-			});
-      const updatedExerciseCalories = exerciseCalories + Math.floor((response.data.exercises[0].nf_calories / response.data.exercises[0].duration_min) * 30);
-      // setCalory(response.data.foods[0].nf_calories)
-      const docRef = await setDoc(doc(firestore, "users", email), {
-        "dates": {
-          [dateKey]: {
-            "exercise": data.length === 0 ? [
-              {
-                'name': value,
-                'calory': Math.floor((response.data.exercises[0].nf_calories / response.data.exercises[0].duration_min) * 30)
-              }
-            ] : [
-              ...data,
-              {
-                'name': value,
-                'calory': Math.floor((response.data.exercises[0].nf_calories / response.data.exercises[0].duration_min) * 30)
-              }
-            ],
-            'exerciseCalories':updatedExerciseCalories
-          },
-        }}, { merge: true });
-      const updatedData = {
-        "dates": {
-          [dateKey]: {
-            "exercise": data.length === 0 ? [
-              {
-                'name': value,
-                'calory': Math.floor((response.data.exercises[0].nf_calories / response.data.exercises[0].duration_min) * 30)
-              }
-            ] : [
-              ...data,
-              {
-                'name': value,
-                'calory': Math.floor((response.data.exercises[0].nf_calories / response.data.exercises[0].duration_min) * 30)
-              }
-            ],
-            'exerciseCalories': updatedExerciseCalories
-          },
-        }
-      };
-      handleCloseModal();
-      setValue('');
-      setData(updatedData.dates[dateKey].exercise)
-      setExerciseCalories(updatedData.dates[dateKey].exerciseCalories)
-    } catch (e) {
-      console.error("Error adding document: ", e);
-    }
-  };
 
   useEffect(() => {
     const getData =async () => {
@@ -82,12 +23,28 @@ const ExerciseModal = ( { date } : { date : Date} ) => {
       try {
         const query = await onSnapshot(documentRef, (doc) => {
           const dates = doc.data()?.dates;
-          if (dates && dates[dateKey] && dates[dateKey].exercise) {
-            setData(dates[dateKey].exercise);
-            setExerciseCalories(dates[dateKey].exerciseCalories || 0);
-          } else {
-            setData([]);
-            setExerciseCalories(0);
+          if (sort === 'bloodSugar') {
+            if (dates && dates[dateKey] && dates[dateKey].bloodSugar !== undefined) {
+              setValue(dates[dateKey].bloodSugar);
+            } else {
+              setValue(String(0));
+            }
+          } else if (sort === 'food') {
+            if (dates && dates[dateKey] && dates[dateKey].food) {
+              setData({ food: dates[dateKey].food, exercise: [] });
+              setFoodCalories(dates[dateKey].foodCalories || 0);
+            } else {
+              setData({ food: [], exercise: [] });
+              setFoodCalories(0);
+            }
+          } else if (sort === 'exercise') {
+            if (dates && dates[dateKey] && dates[dateKey].exercise) {
+              setData({ food: [], exercise: dates[dateKey].exercise });
+              setExerciseCalories(dates[dateKey].exerciseCalories || 0);
+            } else {
+              setData({ food: [], exercise: [] });
+              setExerciseCalories(0);
+            }
           }
         });
       } catch (e) {
@@ -97,6 +54,116 @@ const ExerciseModal = ( { date } : { date : Date} ) => {
     getData();
   },[date]);
 
+  const handleCloseModal = () => {
+    const button = document.querySelector('button[data-hs-overlay="#hs-slide-down-animation-modal"]') as HTMLButtonElement;
+    if (button) {
+      button.click();
+    }
+  };
+
+  const AddBloodsugar = async() => {
+    try {
+      const docRef = await setDoc(doc(firestore, "users", email), {
+          "dates": {
+            [dateKey]: {
+              "bloodSugar": Number(value)
+            },
+          }}, { merge: true });
+    } catch (e) {
+      console.error("Error adding document: ", e);
+    }
+  };
+
+  const AddFood = async() => {
+    try {
+      const response = await axios.post(BASE_FOOD_URL, { query : value},{
+				headers: {
+					'x-app-id': APP_ID,
+					'x-app-key': NUT_API_KEY,
+					'x-remote-user-id' : '0'
+				}
+			});
+      const updatedFoodCalories = foodCalories + response.data.foods[0].nf_calories;
+      const updatedData = {
+        "dates": {
+          [dateKey]: {
+            "food": data.food.length === 0 ? [
+              {
+                'name': value,
+                'calory': response.data.foods[0].nf_calories
+              }
+            ] : [
+              ...data.food,
+              {
+                'name': value,
+                'calory': response.data.foods[0].nf_calories
+              }
+            ],
+            'foodCalories': updatedFoodCalories
+          },
+        }
+      };
+      const docRef = await setDoc(doc(firestore, "users", email), updatedData, { merge: true });
+      setData({food : updatedData.dates[dateKey].food, exercise: data.exercise})
+      setFoodCalories(updatedData.dates[dateKey].foodCalories)
+    } catch (e) {
+      console.error("Error adding document: ", e);
+    }
+  };
+
+  const AddExercise = async() => {
+    try {
+      const response = await axios.post(BASE_EXERCISE_URL, { query : value},{
+				headers: {
+					'x-app-id': APP_ID,
+					'x-app-key': NUT_API_KEY,
+					'x-remote-user-id' : '0'
+				}
+			});
+      const updatedExerciseCalories = exerciseCalories + Math.floor((response.data.exercises[0].nf_calories / response.data.exercises[0].duration_min) * 30);
+      const updatedData = {
+        "dates": {
+          [dateKey]: {
+            "exercise": data.exercise.length === 0 ? [
+              {
+                'name': value,
+                'calory': Math.floor((response.data.exercises[0].nf_calories / response.data.exercises[0].duration_min) * 30)
+              }
+            ] : [
+              ...data.exercise,
+              {
+                'name': value,
+                'calory': Math.floor((response.data.exercises[0].nf_calories / response.data.exercises[0].duration_min) * 30)
+              }
+            ],
+            'exerciseCalories': updatedExerciseCalories
+          },
+        }
+      };
+      const docRef = await setDoc(doc(firestore, "users", email), updatedData, { merge: true });
+      setData({food : data.food ,exercise : updatedData.dates[dateKey].exercise})
+      setExerciseCalories(updatedData.dates[dateKey].exerciseCalories)
+    } catch (e) {
+      console.error("Error adding document: ", e);
+    }
+  };
+
+  const handleUpdateData = (e : React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      if(sort === 'bloodSugar'){
+        AddBloodsugar();
+      } else if(sort === 'food'){
+        AddFood();
+      } else if(sort === 'exercise'){
+        AddExercise();
+      }
+      handleCloseModal();
+      setValue('');
+    } catch (e) {
+      console.error("Error adding document: ", e);
+    }
+  };
 
   return(
     <>
@@ -105,7 +172,7 @@ const ExerciseModal = ( { date } : { date : Date} ) => {
           <div className="flex flex-col bg-white border shadow-sm rounded-xl dark:bg-gray-800 dark:border-gray-700 dark:shadow-slate-700/[.7]">
             <div className="flex justify-between items-center py-3 px-4 border-b dark:border-gray-700">
               <h3 className="font-bold text-gray-800 dark:text-white flex">
-                식단 추가
+                {`${sortName} 입력`}
               </h3>
               <button type="button" className="hs-dropdown-toggle inline-flex flex-shrink-0 justify-center items-center h-8 w-8 rounded-md text-gray-500 hover:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 focus:ring-offset-white transition-all text-sm dark:focus:ring-gray-700 dark:focus:ring-offset-gray-800" data-hs-overlay="#hs-slide-down-animation-modal">
                 <span className="sr-only">Close</span>
@@ -114,14 +181,12 @@ const ExerciseModal = ( { date } : { date : Date} ) => {
                 </svg>
               </button>
             </div>
-            <form onSubmit={AddExercise}>
+            <form onSubmit={handleUpdateData}>
               <div className="p-4 overflow-y-auto">
               <input 
-                id="name"
                 type="text" 
                 onChange={e =>{ 
-                  // handleInputChange(e);
-                  setValue(e.target.value) 
+                  setValue(e.target.value);
                 }} 
                 value={value} 
                 placeholder="Type here" 
@@ -143,4 +208,4 @@ const ExerciseModal = ( { date } : { date : Date} ) => {
   )
 };
 
-export default ExerciseModal;
+export default DailyTotalModal;

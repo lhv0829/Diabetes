@@ -90,7 +90,7 @@ const WeekCalendar = ({date, sort}:{date:Date, sort:sort}) => {
               </div>
               <div className='h-36 leading-5'>
                 <div className='max-md:hidden flex flex-col gap-1'>
-                  {(data && data[dateKey] && data[dateKey].bloodSugar && isBloodSugar) && <p>{`공복 혈당 : ${data[dateKey].bloodSugar}kcal`}</p>}
+                  {(data && data[dateKey] && data[dateKey].bloodSugar && isBloodSugar) && <p>{`공복 혈당 : ${data[dateKey].bloodSugar}`}</p>}
                   {(data && data[dateKey] && data[dateKey].foodCalories && isFood) && <p>{`섭취 칼로리 : ${data[dateKey].foodCalories}kcal`}</p>}
                   {(data && data[dateKey] && data[dateKey].exerciseCalories && isExercise) && <p>{`소모 칼로리 : ${data[dateKey].exerciseCalories}kcal`}</p>}
                 </div>
