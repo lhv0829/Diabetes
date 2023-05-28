@@ -11,6 +11,7 @@ const ExerciseModal = ( { date } : { date : Date} ) => {
   const [value, setValue] = useState('');
   const [data, setData] = useState([]);
   const [exerciseCalories, setExerciseCalories] = useState<number>(0);
+  const [idx, setIdx] = useState<number>(0);
 
   const handleCloseModal = () => {
     const button = document.querySelector('button[data-hs-overlay="#hs-slide-down-animation-modal"]') as HTMLButtonElement;
@@ -29,7 +30,6 @@ const ExerciseModal = ( { date } : { date : Date} ) => {
 				}
 			});
       const updatedExerciseCalories = exerciseCalories + Math.floor((response.data.exercises[0].nf_calories / response.data.exercises[0].duration_min) * 30);
-      // setCalory(response.data.foods[0].nf_calories)
       const docRef = await setDoc(doc(firestore, "users", email), {
         "dates": {
           [dateKey]: {

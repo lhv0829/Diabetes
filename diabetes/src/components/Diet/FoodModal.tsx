@@ -11,6 +11,7 @@ const FoodModal = ( { date } : { date : Date} ) => {
   const [value, setValue] = useState('');
   const [data, setData] = useState([]);
   const [foodCalories, setFoodCalories] = useState<number>(0);
+  // const [idx, setIdx] = useState<number>(0);
 
   const handleCloseModal = () => {
     const button = document.querySelector('button[data-hs-overlay="#hs-slide-down-animation-modal"]') as HTMLButtonElement;
@@ -28,20 +29,20 @@ const FoodModal = ( { date } : { date : Date} ) => {
 					'x-remote-user-id' : '0'
 				}
 			});
-      const updatedFoodCalories = foodCalories + response.data.foods[0].nf_calories;
+      const updatedFoodCalories = foodCalories + Math.round(response.data.foods[0].nf_calories);
       const updatedData = {
         "dates": {
           [dateKey]: {
             "food": data.length === 0 ? [
               {
                 'name': value,
-                'calory': response.data.foods[0].nf_calories
+                'calory': Math.round(response.data.foods[0].nf_calories)
               }
             ] : [
               ...data,
               {
                 'name': value,
-                'calory': response.data.foods[0].nf_calories
+                'calory': Math.round(response.data.foods[0].nf_calories)
               }
             ],
             'foodCalories': updatedFoodCalories

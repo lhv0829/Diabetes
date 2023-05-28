@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { collection, doc, onSnapshot } from "firebase/firestore";
+import { collection, doc, onSnapshot, setDoc } from "firebase/firestore";
 import { firestore } from "../../firebase";
 import Datepicker from "../Datepicker";
 import { exercise } from '../constants/constants';
@@ -15,7 +15,26 @@ const DailyExercise = () => {
 
   const handleDateChange = (date:Date) => {
     setSelectedDate(date);
-    };
+  };
+
+  const deleteItem = async(index:number) => {
+    const updatedExerciseList = data.filter((exercise, i) => i !== index);
+    const updatedCalories = exerciseCalories - data[index].calory;
+    try{
+      await setDoc(doc(firestore, "users", loginEmail), {
+        "dates": {
+          [dateKey]: {
+            "exercise": updatedExerciseList.length === 0 ? [] : updatedExerciseList,
+            'exerciseCalories': updatedExerciseList.length === 0 ? 0 : updatedCalories
+          },
+        }
+      }, { merge: true });
+      setData(updatedExerciseList);
+      setExerciseCalories(updatedCalories);
+    } catch(e) {
+      console.log(e);
+    }
+  };
 
   useEffect(() => {
     const getData =async () => {
@@ -38,36 +57,6 @@ const DailyExercise = () => {
     getData();
   },[selectedDate]);
   
-  // const handleUpdateData = async(e : React.MouseEvent<HTMLButtonElement>) => {
-  //   e.preventDefault();
-  //   try {
-  //     let updatedData = {};
-
-  //     if (sort === 'total') {
-  //       updatedData = {
-  //         'dates' : {
-  //           [dateKey] : {
-  //             [`bloodSugar`]: parseFloat(formData.bloodSugar as string) || '',
-  //             [`food`]: formData.food || '',
-  //             [`exercise`]: formData.exercise || '',
-  //           },
-  //         }
-  //       };
-  //     } else {
-  //       const value = sort === 'bloodSugar' ? parseFloat(formData.bloodSugar as string) : formData[sort];
-  //       updatedData = {
-  //         'dates' : {
-  //           [dateKey] : {
-  //             [sort]: value || '',
-  //           }
-  //         }
-  //       };
-  //     }
-  //     const docRef = await setDoc(doc(firestore, 'users', email), updatedData, { merge: true });
-  //   } catch (e) {
-  //     console.error("Error adding document: ", e);
-  //   }
-  // };
   return(
     <>
       <div>
@@ -78,7 +67,7 @@ const DailyExercise = () => {
               <div className='w-full text-center border border-slate-700'>운동</div>
               <div className='w-full text-center border border-slate-700'>칼로리</div>
             </div>
-            { Array.isArray(data) && data.map((exercise:exercise, idx:number) => <ExerciseList name={exercise.name} calory={exercise.calory} key={`${exercise.name}${idx}`}></ExerciseList>)}
+            { Array.isArray(data) && data.map((exercise:exercise, idx:number) => <ExerciseList name={exercise.name} calory={exercise.calory} idx={idx} onDelete={deleteItem} key={`${exercise.name}${idx}`}></ExerciseList>)}
           </div>
         </div>
           <div className=' border-t-2 mt-8 w-full flex gap-8 justify-end items-center'>

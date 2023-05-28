@@ -20,6 +20,7 @@ const Header = () => {
         setIsLogin(false);
         localStorage.setItem('isLogin', 'false');
         localStorage.removeItem('Email');
+        window.location.reload();
     } catch(error){
         alert(`Unexpected Error : ${error}`)
     }

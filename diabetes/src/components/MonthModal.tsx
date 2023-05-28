@@ -74,9 +74,9 @@ const MonthModal = ( { sort, dateKey } : { sort:sort, dateKey : string} ) => {
     e.preventDefault();
     try {
       if (sort === 'total') {
-        AddBloodsugar();
-        AddFood();
-        AddExercise();
+        if(bloodSugar !== 0) AddBloodsugar();
+        if(food !== '') AddFood();
+        if(exercise !== '') AddExercise();
       } else if(sort === 'bloodSugar'){
         AddBloodsugar();
       } else if(sort === 'food'){
@@ -111,20 +111,20 @@ const MonthModal = ( { sort, dateKey } : { sort:sort, dateKey : string} ) => {
 					'x-remote-user-id' : '0'
 				}
 			});
-      const updatedFoodCalories = foodCalories + response.data.foods[0].nf_calories;
+      const updatedFoodCalories = foodCalories + Math.round(response.data.foods[0].nf_calories);
       const updatedData = {
         "dates": {
           [dateKey]: {
             "food": data.food.length === 0 ? [
               {
                 'name': food,
-                'calory': response.data.foods[0].nf_calories
+                'calory': Math.round(response.data.foods[0].nf_calories)
               }
             ] : [
               ...data.food,
               {
                 'name': food,
-                'calory': response.data.foods[0].nf_calories
+                'calory': Math.round(response.data.foods[0].nf_calories)
               }
             ],
             'foodCalories': updatedFoodCalories
@@ -149,7 +149,7 @@ const MonthModal = ( { sort, dateKey } : { sort:sort, dateKey : string} ) => {
 				}
 			});
       const updatedExerciseCalories = exerciseCalories + Math.floor((response.data.exercises[0].nf_calories / response.data.exercises[0].duration_min) * 30);
-      // setCalory(response.data.foods[0].nf_calories)
+      // setCalory(Math.floor(response.data.foods[0].nf_calories))
       const updatedData = {
         "dates": {
           [dateKey]: {

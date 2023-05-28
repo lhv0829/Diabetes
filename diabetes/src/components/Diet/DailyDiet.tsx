@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { collection, doc, onSnapshot } from "firebase/firestore";
+import { collection, doc, onSnapshot, setDoc } from "firebase/firestore";
 import { firestore } from "../../firebase";
 import Datepicker from "../Datepicker";
 import FoodModal from './FoodModal';
@@ -15,7 +15,26 @@ const DailyDiet = () => {
 
   const handleDateChange = (date:Date) => {
     setSelectedDate(date);
-    };
+  };
+
+  const deleteItem = async(index:number) => {
+    const updatedFoodList = data.filter((food, i) => i !== index);
+    const updatedCalories = foodCalories - data[index].calory;
+    try{
+      await setDoc(doc(firestore, "users", loginEmail), {
+        "dates": {
+          [dateKey]: {
+            "food": updatedFoodList.length === 0 ? [] : updatedFoodList,
+            'foodCalories': updatedFoodList.length === 0 ? 0 : updatedCalories
+          },
+        }
+      }, { merge: true });
+      setData(updatedFoodList);
+      setFoodCalories(updatedCalories);
+    } catch(e) {
+      console.log(e);
+    }
+  };
 
   useEffect(() => {
     const getData =async () => {
@@ -37,37 +56,8 @@ const DailyDiet = () => {
     };
     getData();
   },[selectedDate]);
-  
-  // const handleUpdateData = async(e : React.MouseEvent<HTMLButtonElement>) => {
-  //   e.preventDefault();
-  //   try {
-  //     let updatedData = {};
 
-  //     if (sort === 'total') {
-  //       updatedData = {
-  //         'dates' : {
-  //           [dateKey] : {
-  //             [`bloodSugar`]: parseFloat(formData.bloodSugar as string) || '',
-  //             [`food`]: formData.food || '',
-  //             [`exercise`]: formData.exercise || '',
-  //           },
-  //         }
-  //       };
-  //     } else {
-  //       const value = sort === 'bloodSugar' ? parseFloat(formData.bloodSugar as string) : formData[sort];
-  //       updatedData = {
-  //         'dates' : {
-  //           [dateKey] : {
-  //             [sort]: value || '',
-  //           }
-  //         }
-  //       };
-  //     }
-  //     const docRef = await setDoc(doc(firestore, 'users', email), updatedData, { merge: true });
-  //   } catch (e) {
-  //     console.error("Error adding document: ", e);
-  //   }
-  // };
+  
   return(
     <>
       <div>
@@ -78,7 +68,7 @@ const DailyDiet = () => {
               <div className='w-full text-center border border-slate-700'>음식</div>
               <div className='w-full text-center border border-slate-700'>칼로리</div>
             </div>
-            { Array.isArray(data) && data.map((food:food, idx:number) => <FoodList name={food.name} calory={food.calory} key={`${food.name}${idx}`}></FoodList>)}
+            { Array.isArray(data) && data.map((food:food, idx:number) => <FoodList name={food.name} calory={food.calory} idx={idx} onDelete={deleteItem} key={`${food.name}${idx}`}></FoodList>)}
           </div>
         </div>
           <div className=' border-t-2 mt-8 w-full flex gap-8 justify-end items-center'>
