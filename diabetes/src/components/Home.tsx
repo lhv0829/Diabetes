@@ -3,13 +3,10 @@ import { BsFileEarmarkMedical } from 'react-icons/bs'
 import { CiForkAndKnife } from 'react-icons/Ci'
 import { MdOutlineSportsScore } from 'react-icons/md'
 import { AiOutlineDatabase } from 'react-icons/ai'
-import { useEffect } from 'react'
 
 const Home = () => {
   const isLogin = localStorage.getItem('isLogin') === 'true';
-  useEffect(() => {
-    console.log(isLogin);
-  },[]);
+
   return(
     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 my-10 mx-8 h-5/6">
       <Link to={`${isLogin ? '/bloodsugar' : '/login'}`} className="border rounded-md flex justify-center">

@@ -12,12 +12,15 @@ import DailyTotalModal from "./DailyTotalModal";
 
 const DailyTotal = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const loginEmail = localStorage.getItem('Email');
   const [data, setData] = useState({});
-  const dateKey = `${selectedDate.getFullYear()}-${(selectedDate.getMonth() + 1).toString().padStart(2, '0')}-${selectedDate.getDate().toString().padStart(2, '0')}`;
   const [foods, setFoods] = useState([]);
+  const [bloodSugar, setBloodSugar] = useState(0);
   const [exercises, setExercises] = useState([]);
+  const [foodCalories, setFoodCalories] = useState(0);
+  const [exerciseCalories, setExerciseCalories] = useState(0);
   const [sort, setSort] = useState<sort>('total');
+  const loginEmail = localStorage.getItem('Email');
+  const dateKey = `${selectedDate.getFullYear()}-${(selectedDate.getMonth() + 1).toString().padStart(2, '0')}-${selectedDate.getDate().toString().padStart(2, '0')}`;
 
   const handleDateChange = (date:Date) => {
     setSelectedDate(date);
@@ -29,8 +32,11 @@ const DailyTotal = () => {
       try {
         const query = await onSnapshot(documentRef, (doc) => {
           setData(doc.data()?.dates);
+          setBloodSugar(doc.data()?.dates[dateKey]?.bloodSugar);
           setFoods(doc.data()?.dates[dateKey]?.food);
           setExercises(doc.data()?.dates[dateKey]?.exercise);
+          setFoodCalories(doc.data()?.dates[dateKey]?.foodCalories);
+          setExerciseCalories(doc.data()?.dates[dateKey]?.exerciseCalories);
         });
       } catch (e) {
         console.error("Error adding document: ", e);
@@ -38,6 +44,12 @@ const DailyTotal = () => {
     };
     getData();
   },[selectedDate]);
+
+  useEffect(() => {
+    console.log(dateKey);
+    console.log(foods);
+    console.log(exercises);
+  },[data]);
 
 
   return(
@@ -49,7 +61,7 @@ const DailyTotal = () => {
             <BsFileEarmarkMedical/>공복 혈당
           </h3>
           <div className="my-6 w-64 h-36 text-3xl flex justify-center items-center">
-            {data && data[dateKey] && data[dateKey].bloodSugar ? data[dateKey].bloodSugar : 0}
+            {bloodSugar ? bloodSugar : 0}
           </div>
           <button type="button" onClick={() => setSort('bloodSugar')} className="py-3 px-4 my-6 inline-flex w-24 justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all text-sm dark:focus:ring-offset-gray-800" data-hs-overlay="#hs-slide-down-animation-modal">
             혈당 입력
@@ -66,7 +78,7 @@ const DailyTotal = () => {
               {!Array.isArray(foods) && <div>식단 : ?</div>}
             </div>
             <div className="flex mt-3 border-t-2 pt-2 border-dotted border-gray-700">
-              {data && data[dateKey] && data[dateKey].foodCalories ? `Total : ${data[dateKey].foodCalories}kcal` : 'Total : 0kcal'}
+              {foodCalories ? `Total : ${foodCalories}kcal` : 'Total : 0kcal'}
             </div>
           </div>
           <button type="button" onClick={() => setSort('food')} className="py-3 px-4 my-6 inline-flex w-24 justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all text-sm dark:focus:ring-offset-gray-800" data-hs-overlay="#hs-slide-down-animation-modal">
@@ -84,13 +96,17 @@ const DailyTotal = () => {
               {!Array.isArray(exercises) && <div>운동 : ?</div>}
             </div>
             <div className="flex mt-3 border-t-2 pt-2 border-dotted border-gray-700">
-              {data && data[dateKey] && data[dateKey].exerciseCalories ? `Total : ${data[dateKey].exerciseCalories}kcal` : 'Total : 0kcal'}
+              {exerciseCalories ? `Total : ${exerciseCalories}kcal` : 'Total : 0kcal'}
             </div>
           </div>
           <button type="button" onClick={() => setSort('exercise')} className="py-3 px-4 my-6 inline-flex w-24 justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all text-sm dark:focus:ring-offset-gray-800" data-hs-overlay="#hs-slide-down-animation-modal">
             운동 입력
           </button>
-          <DailyTotalModal sort={sort} date={selectedDate}></DailyTotalModal>
+          <DailyTotalModal 
+            sort={sort} date={selectedDate} 
+            food={foods} exercise={exercises}
+            totalFoodCalories={foodCalories} totalExerciseCalories={exerciseCalories}
+          ></DailyTotalModal>
         </div>
       </div>
     </div>

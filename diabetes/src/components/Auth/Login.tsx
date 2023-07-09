@@ -43,9 +43,13 @@ const Login = () => {
   const onSocialClick = async(e:React.MouseEvent<HTMLButtonElement>) => {
     try{
       const provider = new GoogleAuthProvider();
-      const user = await signInWithPopup(auth, provider);
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      const email = user.email as string;
+      localStorage.setItem('isLogin', 'true');
+      localStorage.setItem('Email', email);
       navigate('/');
-      console.log(user);
+      console.log(result);
     } catch(error) {
       alert(error);
     }

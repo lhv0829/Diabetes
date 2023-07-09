@@ -13,7 +13,7 @@ import { MdOutlineSportsScore } from 'react-icons/md'
 const Monthly = ({ sort } : {sort : sort}) => {
   const [isChart, setIsChart] = useState<boolean>(false);
   const [isCalendar, setIsCalendar] = useState<boolean>(false);
-    const [date, setDate] = useState<Date>(new Date());
+  const [date, setDate] = useState<Date>(new Date());
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
   const handleToggle = (event : React.ChangeEvent<HTMLInputElement>) => {

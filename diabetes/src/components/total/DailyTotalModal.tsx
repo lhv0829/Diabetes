@@ -5,7 +5,10 @@ import { sort } from "../constants/constants";
 import axios from "axios";
 import { NUT_API_KEY, APP_ID } from "../constants/constants";
 
-const DailyTotalModal = ({sort, date} : {sort:sort, date:Date}) => {
+const DailyTotalModal = (
+  {sort, date, food, exercise, totalFoodCalories, totalExerciseCalories}
+   : 
+  {sort:sort, date:Date, food:object, exercise:object, totalFoodCalories:number, totalExerciseCalories:number}) => {
   const email = localStorage.getItem('Email') as string;
   const BASE_FOOD_URL = 'https://trackapi.nutritionix.com/v2/natural/nutrients'; 
   const BASE_EXERCISE_URL = 'https://trackapi.nutritionix.com/v2/natural/exercise';
@@ -13,46 +16,36 @@ const DailyTotalModal = ({sort, date} : {sort:sort, date:Date}) => {
 
   const dateKey = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
   const [value, setValue] = useState('');
-  const [data, setData] = useState({food:[], exercise:[]});
+  const [data, setData] = useState({foods:[], exercises:[]});
   const [foodCalories, setFoodCalories] = useState<number>(0);
   const [exerciseCalories, setExerciseCalories] = useState<number>(0);
 
+
+  // useEffect(() => {
+  //   const resetData = () => {
+  //     setValue("");
+  //     setData({ foods: [], exercises: [] });
+  //     setFoodCalories(0);
+  //     setExerciseCalories(0);
+  //   };
+
+  //   resetData();
+  // }, []);
+  
   useEffect(() => {
-    const getData =async () => {
-      const documentRef = doc(collection(firestore, 'users'), email);
-      try {
-        const query = await onSnapshot(documentRef, (doc) => {
-          const dates = doc.data()?.dates;
-          if (sort === 'bloodSugar') {
-            if (dates && dates[dateKey] && dates[dateKey].bloodSugar !== undefined) {
-              setValue(dates[dateKey].bloodSugar);
-            } else {
-              setValue(String(0));
-            }
-          } else if (sort === 'food') {
-            if (dates && dates[dateKey] && dates[dateKey].food) {
-              setData({ food: dates[dateKey].food, exercise: [] });
-              setFoodCalories(dates[dateKey].foodCalories || 0);
-            } else {
-              setData({ food: [], exercise: [] });
-              setFoodCalories(0);
-            }
-          } else if (sort === 'exercise') {
-            if (dates && dates[dateKey] && dates[dateKey].exercise) {
-              setData({ food: [], exercise: dates[dateKey].exercise });
-              setExerciseCalories(dates[dateKey].exerciseCalories || 0);
-            } else {
-              setData({ food: [], exercise: [] });
-              setExerciseCalories(0);
-            }
-          }
-        });
-      } catch (e) {
-        console.error("Error adding document: ", e);
-      }
+    const resetData = () => {
+      setValue("");
+      setData({ foods: [], exercises: [] });
+      setFoodCalories(0);
+      setExerciseCalories(0);
     };
-    getData();
-  },[date]);
+
+    resetData();
+    // setValue('');
+    setData({ foods : food ? food : [], exercises : exercise? exercise : []});
+    setFoodCalories(totalFoodCalories);
+    setExerciseCalories(totalExerciseCalories);
+  },[date])
 
   const handleCloseModal = () => {
     const button = document.querySelector('button[data-hs-overlay="#hs-slide-down-animation-modal"]') as HTMLButtonElement;
@@ -83,28 +76,30 @@ const DailyTotalModal = ({sort, date} : {sort:sort, date:Date}) => {
 					'x-remote-user-id' : '0'
 				}
 			});
-      const updatedFoodCalories = foodCalories + response.data.foods[0].nf_calories;
+      const updatedFoodCalories = foodCalories + Math.round(response.data.foods[0].nf_calories);
       const updatedData = {
         "dates": {
           [dateKey]: {
-            "food": data.food.length === 0 ? [
+            "food": data.foods.length === 0 ? [
               {
                 'name': value,
-                'calory': response.data.foods[0].nf_calories
+                'calory': Math.round(response.data.foods[0].nf_calories)
               }
             ] : [
-              ...data.food,
+              ...data.foods,
               {
                 'name': value,
-                'calory': response.data.foods[0].nf_calories
+                'calory': Math.round(response.data.foods[0].nf_calories)
               }
             ],
-            'foodCalories': updatedFoodCalories
+            'foodCalories': updatedFoodCalories,
+            'exercise': data.exercises,
+            'exerciseCalories' : exerciseCalories
           },
         }
       };
       const docRef = await setDoc(doc(firestore, "users", email), updatedData, { merge: true });
-      setData({food : updatedData.dates[dateKey].food, exercise: data.exercise})
+      setData({foods : updatedData.dates[dateKey].food, exercises: data.exercises})
       setFoodCalories(updatedData.dates[dateKey].foodCalories)
     } catch (e) {
       console.error("Error adding document: ", e);
@@ -124,24 +119,26 @@ const DailyTotalModal = ({sort, date} : {sort:sort, date:Date}) => {
       const updatedData = {
         "dates": {
           [dateKey]: {
-            "exercise": data.exercise.length === 0 ? [
+            "exercise": data.exercises.length === 0 ? [
               {
                 'name': value,
                 'calory': Math.floor((response.data.exercises[0].nf_calories / response.data.exercises[0].duration_min) * 30)
               }
             ] : [
-              ...data.exercise,
+              ...data.exercises,
               {
                 'name': value,
                 'calory': Math.floor((response.data.exercises[0].nf_calories / response.data.exercises[0].duration_min) * 30)
               }
             ],
-            'exerciseCalories': updatedExerciseCalories
+            'exerciseCalories': updatedExerciseCalories,
+            'food' : data.foods,
+            'foodCalories' : foodCalories
           },
         }
       };
       const docRef = await setDoc(doc(firestore, "users", email), updatedData, { merge: true });
-      setData({food : data.food ,exercise : updatedData.dates[dateKey].exercise})
+      setData({foods : data.foods ,exercises : updatedData.dates[dateKey].exercise})
       setExerciseCalories(updatedData.dates[dateKey].exerciseCalories)
     } catch (e) {
       console.error("Error adding document: ", e);
